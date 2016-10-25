@@ -2,102 +2,53 @@ FROM nrel/openstudio
 
 MAINTAINER Phylroy Lopez phylroy.lopez@canada.ca
 
-
 ARG DISPLAY=local
 ENV DISPLAY ${DISPLAY}
 
+#Repository utilities add on list.
+ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils'
+
+#Basic software
+ARG software='git curl zip lynx nano unzip xterm terminator firefox'
+
+#Netbeans Dependancies (requires $java_repositories to be set)
+ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev'
+
+#VCCode Dependancies
+ARG vscode_deps='curl libc6-dev nodejs npm libasound2 libgconf-2-4 libgnome-keyring-dev libgtk2.0-0 libnss3 libpci3  libxtst6 libcanberra-gtk-module libnotify4 libxss1 wget'
+#Java repositories needed for Netbeans
+
+#Purge software list
+ARG intial_purge_software='openjdk*'
+
+#Ubuntu install commands
+ARG apt_install='apt-get install -y --no-install-recommends'
+
+#Ubuntu install clean up command
+ARG clean='rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /downloads/*'
+
+#Create folder for downloads
+RUN mkdir /downloads
+
+
 # Add ability to add ubuntu repositories required for development.
-RUN apt-get update \
-  && apt-get install -y \
-  software-properties-common \
-  python-software-properties \
-  debconf-utils \
-  dpkg-dev \
-  zip
 
-#install Java & Netbeans
-RUN add-apt-repository -y ppa:webupd8team/java && add-apt-repository -y ppa:openjdk-r/ppa && apt-get update \
-&& apt-get -y purge openjdk* \
-&& apt-get install -y python-software-properties debconf-utils \
-&& echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections \
-&& apt-get update && apt-get install -y oracle-java8-installer openjdk-8-jdk
+RUN apt-get update && $apt_install $software $repository_utilities $vscode_deps && apt-get clean && $clean \
+&& apt-get update && add-apt-repository ppa:webupd8team/java -y && apt-get update \
+&& (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) && apt-get install -y oracle-java8-installer oracle-java8-set-default
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+ENV PATH $JAVA_HOME/bin:$PATH
+RUN apt-get update && $apt_install $netbeans_deps && apt-get clean && $clean
 
-#Get installer for netbeans, but do not install.. leave it up to user.
-RUN curl -sSL http://download.netbeans.org/netbeans/8.1/final/bundles/netbeans-8.1-javase-linux.sh -o /tmp/netbeans.sh \
-&& chmod +x /tmp/netbeans.sh \
-&& curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o /tmp/ruby_netbeans.zip \
-&& unzip  /tmp/ruby_netbeans.zip
-RUN /tmp/netbeans.sh --silent
 
-RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - \
-  && apt-get update \
-  && apt-get install -y \
-    ca-certificates \
-	  git \
-	  gfortran \
-    gconf2 \
-	  qt5-default \
-	  libqt5webkit5-dev \
-	  libboost1.55-all-dev \
-	  swig \
-	  libssl-dev \
-	  libxt-dev \
-	  curl \
-	  gvfs-bin \
-	  xdg-utils \
-	  libasound2 \
-	  libatk1.0-0 \
-	  libcairo2 \
-	  libcups2 \
-	  libdatrie1 \
-	  libdbus-1-3 \
-	  libfontconfig1 \
-	  libfreetype6 \
-	  libgconf-2-4 \
-	  libgcrypt20 \
-	  libgl1-mesa-dri \
-	  libgl1-mesa-glx \
-	  libgdk-pixbuf2.0-0 \
-	  libglib2.0-0 \
-	  libgtk2.0-0 \
-	  libgpg-error0 \
-	  libgraphite2-3 \
-	  libnotify-bin \
-	  libnss3 \
-	  libnspr4 \
-	  libpango-1.0-0 \
-	  libpangocairo-1.0-0 \
-    libreoffice-calc \
-    libxcomposite1 \
-	  libxcursor1 \
-	  libxdmcp6 \
-	  libxi6 \
-	  libxrandr2 \
-	  libxrender1 \
-    libxss1 \
-	  libxtst6 \
-	  liblzma5 \
-    lynx \
-    nano \
-    nodejs \
-	  software-properties-common \
-    terminator \
-    texlive-xetex \
-	  unzip \
-	  xterm \
-    icnsutils \
-    graphicsmagick \
-    xz-utils \
-    firefox \
-  && rm -rf /var/lib/apt/lists/* \
-  && set -x \
-	&& curl -sSL https://go.microsoft.com/fwlink/?LinkID=760868 -o /tmp/vs.deb \
-	&& dpkg -i /tmp/vs.deb \
-	&& rm -rf /tmp/vs.deb \
-  && curl -sSL https://release.gitkraken.com/linux/gitkraken-amd64.deb -o /tmp/gitkraken.deb \
-  && dpkg -i /tmp/gitkraken.deb
+#Update NodeJS
+RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+#Install VSCode
+RUN set -x \
+&& curl -sSL https://go.microsoft.com/fwlink/?LinkID=760868 -o /downloads/vs.deb \
+&& dpkg -i /downloads/vs.deb && apt-get clean && $clean
 
-##Configuration
+
 #Fix X11 bug of 	electron not running under remote x11
 RUN sed -i 's/BIG-REQUESTS/_IG-REQUESTS/' /usr/lib/x86_64-linux-gnu/libxcb.so.1
 
@@ -105,50 +56,43 @@ RUN sed -i 's/BIG-REQUESTS/_IG-REQUESTS/' /usr/lib/x86_64-linux-gnu/libxcb.so.1
 RUN echo 'export RUBYLIB="/usr/local/lib/site_ruby/2.0.0"' >> ~/.bashrc
 
 #add regular user
-RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd && adduser nrcan sudo
+RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
+&& adduser nrcan sudo \
+&& adduser nrcan root
 WORKDIR /home/nrcan
+RUN chmod -R 770 /root
 
-RUN apt-get install libtinfo-dev \
-&& wget http://www.cmake.org/files/v3.3/cmake-3.3.0.tar.gz \
-&& tar -xzf cmake-3.3.0.tar.gz \
-&& cd cmake-3.3.0 \
-&& ./configure \
-&& make -j2 \
-&& make install
+#Install Netbeans.
+RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8.2-php-linux-x64.sh -o /downloads/netbeans.sh \
+&& chmod +x /downloads/netbeans.sh \
+&& /downloads/netbeans.sh --silent \
+&& apt-get clean && $clean
 
-### nrcan's ruby setup....
+#Download Ruby plugin for Netbeans (user needs to install manually on their own.)
+RUN mkdir /home/nrcan/ruby_netbeans_plugin \
+&& curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o /home/nrcan/ruby_netbeans_plugin/ruby_netbeans.zip \
+&& unzip /home/nrcan/ruby_netbeans_plugin/ruby_netbeans.zip -d /home/nrcan/ruby_netbeans_plugin \
+&& rm /home/nrcan/ruby_netbeans_plugin/ruby_netbeans.zip
+
+#Switch to nrcan user
 USER nrcan
-# Add RUBYLIB link for openstudio.rb
+
+#Add RUBYLIB link for openstudio.rb
 ENV RUBYLIB /usr/local/lib/site_ruby/2.0.0
-# Build and install Ruby 2.0 using rbenv for flexibility for user.
-RUN git clone https://github.com/sstephenson/rbenv.git ~/.rbenv \
-  && git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build \
-  && RUBY_CONFIGURE_OPTS=--enable-shared ~/.rbenv/bin/rbenv install 2.0.0-p594 \
-  && ~/.rbenv/bin/rbenv global 2.0.0-p594 \
-  && echo 'PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc \
-  && echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-RUN ~/.rbenv/shims/gem install  \
-    bundler \
-    debase \
-    debride \
-    fasterer \
-    rcodetools \
-#    reek \
-    rubocop \
-    ruby-beautify \
-    ruby-debug-ide \
-    ruby-lint
+
+#Build and install Ruby 2.0 using rbenv for flexibility for user.
+RUN echo 'PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH"' >> ~/.bashrc \
+&& echo 'eval "$(rbenv init -)"' >> ~/.bashrc
+
+#Install gems for user.
+RUN /root/.rbenv/shims/gem install bundler debase debride fasterer rcodetools rubocop ruby-beautify ruby-debug-ide ruby-lint
+
 # Add extensions to nrcan vscode installation.
-RUN code --install-extension ilich8086.launcher \
-  && code --install-extension rebornix.Ruby \
-  && code --install-extension ms-vscode.cpptools \
-  && code --install-extension karyfoundation.idf
+RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf ; \
+    do code --install-extension  $ext; done
+
 #Add netbeans to nrcan's path in bashrc.
 RUN echo 'PATH="/usr/local/netbeans-8.1/bin:$PATH"' >> ~/.bashrc
-
-
-
-
 
 ENTRYPOINT ["terminator"]
 # docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
