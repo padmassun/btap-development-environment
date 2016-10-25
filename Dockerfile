@@ -92,7 +92,7 @@ RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundatio
     do code --install-extension  $ext; done
 
 #Add netbeans to nrcan's path in bashrc.
-RUN echo 'PATH="/usr/local/netbeans-8.1/bin:$PATH"' >> ~/.bashrc
+RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
 
 ENTRYPOINT ["terminator"]
 # docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
