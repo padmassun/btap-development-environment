@@ -1,8 +1,10 @@
 #!/bin/bash
+linux_home_folder=/root
+x_display=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}')
 this_user=$(whoami)
-DISPLAY=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}')
-this_user='phylr'
+container_name=btap_dev
+dockerhub_image=phylroy/btap-development-environment
 echo $this_user
-echo $DISPLAY
-echo docker create -ti -e DISPLAY=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}'):0.0 -v/c/Users/$this_user:/home/nrcan/windows-host --name btap_dev phylroy/btap-development-environment
-docker create -ti -e DISPLAY=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}'):0.0 -v/c/Users/$this_user:/home/nrcan/windows-host --name btap_dev phylroy/btap-development-environment
+echo using  X server at this IP $x_display
+echo docker create -ti -e DISPLAY=$x_display:0.0 -v/c/Users/$this_user:$linux_home_folder/windows-host --name $container_name $dockerhub_image
+docker create -ti -e DISPLAY=$x_display:0.0 -v/c/Users/$this_user:$linux_home_folder/windows-host --name $container_name $dockerhub_image

@@ -50,17 +50,10 @@ RUN set -x \
 
 
 #Fix X11 bug of 	electron not running under remote x11
-RUN sed -i 's/BIG-REQUESTS/_IG-REQUESTS/' /usr/lib/x86_64-linux-gnu/libxcb.so.1
+#RUN sed -i 's/BIG-REQUESTS/_IG-REQUESTS/' /usr/lib/x86_64-linux-gnu/libxcb.so.1
 
 #ensure OS is part of the ruby lib
 RUN echo 'export RUBYLIB="/usr/local/lib/site_ruby/2.0.0"' >> ~/.bashrc
-
-#add regular user
-RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
-&& adduser nrcan sudo \
-&& adduser nrcan root
-WORKDIR /home/nrcan
-RUN chmod -R 770 /root
 
 #Install Netbeans.
 RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8.2-php-linux-x64.sh -o /downloads/netbeans.sh \
@@ -69,28 +62,26 @@ RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8
 && apt-get clean && $clean
 
 #Download Ruby plugin for Netbeans (user needs to install manually on their own.)
-RUN mkdir /home/nrcan/ruby_netbeans_plugin \
-&& curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o /home/nrcan/ruby_netbeans_plugin/ruby_netbeans.zip \
-&& unzip /home/nrcan/ruby_netbeans_plugin/ruby_netbeans.zip -d /home/nrcan/ruby_netbeans_plugin \
-&& rm /home/nrcan/ruby_netbeans_plugin/ruby_netbeans.zip
-
-#Switch to nrcan user
-USER nrcan
-
-#Add RUBYLIB link for openstudio.rb
-ENV RUBYLIB /usr/local/lib/site_ruby/2.0.0
+RUN mkdir ~/ruby_netbeans_plugin \
+&& curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o ~/ruby_netbeans_plugin/ruby_netbeans.zip \
+&& unzip ~/ruby_netbeans_plugin/ruby_netbeans.zip -d ~/ruby_netbeans_plugin \
+&& rm ~/ruby_netbeans_plugin/ruby_netbeans.zip
 
 #Build and install Ruby 2.0 using rbenv for flexibility for user.
-RUN echo 'PATH="/root/.rbenv/bin:/root/.rbenv/shims:$PATH"' >> ~/.bashrc \
+RUN echo 'PATH="~/.rbenv/bin:~/.rbenv/shims:$PATH"' >> ~/.bashrc \
 && echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 
 #Install gems for user.
-RUN /root/.rbenv/shims/gem install bundler debase debride fasterer rcodetools rubocop ruby-beautify ruby-debug-ide ruby-lint
+RUN ~/.rbenv/shims/gem install bundler debase debride fasterer rcodetools rubocop ruby-beautify ruby-debug-ide ruby-lint
 
+
+#add regular user
+RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
+&& adduser nrcan sudo
 # Add extensions to nrcan vscode installation.
 RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf ; \
-    do code --install-extension  $ext; done
-
+    do code --user-data-dir='.' --install-extension  $ext; done
+RUN echo 'alias code="code --user-data-dir='.'  "' >> ~/.bashrc
 #Add netbeans to nrcan's path in bashrc.
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
 
