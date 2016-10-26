@@ -49,9 +49,6 @@ RUN set -x \
 && dpkg -i /downloads/vs.deb && apt-get clean && $clean
 
 
-#Fix X11 bug of 	electron not running under remote x11
-#RUN sed -i 's/BIG-REQUESTS/_IG-REQUESTS/' /usr/lib/x86_64-linux-gnu/libxcb.so.1
-
 #ensure OS is part of the ruby lib
 RUN echo 'export RUBYLIB="/usr/local/lib/site_ruby/2.0.0"' >> ~/.bashrc
 
@@ -85,6 +82,11 @@ RUN echo 'alias code="code --user-data-dir='.'  "' >> ~/.bashrc
 #Add netbeans to nrcan's path in bashrc.
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
 
+#Add helper scripts to path
+COPY btap_utilities /root/.btap_utilities/
+RUN echo 'PATH="~/.btap_utilities:$PATH"' >> ~/.bashrc
+
+WORKDIR /root
 ENTRYPOINT ["terminator"]
 # docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
 # /c/Program\ Files/Xming/Xming.exe -ac -multiwindow -clipboard
