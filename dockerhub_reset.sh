@@ -9,3 +9,4 @@ echo using  X server at this IP $x_display
 echo docker create -ti -e DISPLAY=$x_display:0.0 -v/c/Users/$this_user:$linux_home_folder/windows-host --name $container_name $dockerhub_image
 docker rm btap_dev
 docker create -ti -e DISPLAY=$x_display:0.0 -v/c/Users/$this_user:$linux_home_folder/windows-host --name $container_name $dockerhub_image
+echo Container reset to last clean build

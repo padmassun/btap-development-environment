@@ -59,17 +59,11 @@ RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8
 && /downloads/netbeans.sh --silent \
 && apt-get clean && $clean
 
-#Download Ruby plugin for Netbeans (user needs to install manually on their own.)
-RUN mkdir ~/ruby_netbeans_plugin \
-&& curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o ~/ruby_netbeans_plugin/ruby_netbeans.zip \
-&& unzip ~/ruby_netbeans_plugin/ruby_netbeans.zip -d ~/ruby_netbeans_plugin \
-&& rm ~/ruby_netbeans_plugin/ruby_netbeans.zip
+
 
 #Add regular user
 RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
 && adduser nrcan sudo
-COPY btap_utilities /home/nrcan/.btap_utilities/
-RUN chown -R nrcan:nrcan /home/nrcan/.btap_utilities
 
 USER nrcan
 # Build and install Ruby 2.0 using rbenv for flexibility
@@ -90,6 +84,12 @@ WORKDIR /home/nrcan
 # Add RUBYLIB link for openstudio.rb
 ENV RUBYLIB /usr/local/lib/site_ruby/2.0.0
 
+#Download Ruby plugin for Netbeans (user needs to install manually on their own.)
+RUN mkdir ~/ruby_netbeans_plugin \
+&& curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o ~/ruby_netbeans_plugin/ruby_netbeans.zip \
+&& unzip ~/ruby_netbeans_plugin/ruby_netbeans.zip -d ~/ruby_netbeans_plugin \
+&& rm ~/ruby_netbeans_plugin/ruby_netbeans.zip
+
 # Add extensions to nrcan vscode installation.
 RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf ; \
     do code --install-extension  $ext; done
@@ -97,8 +97,8 @@ RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundatio
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
 
 #Add helper scripts to path
-
-RUN echo 'PATH="~/.btap_utilities:$PATH"' >> ~/.bashrc
+RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc
+RUN git clone https://github.com/phylroy/btap_utilities.git
 
 WORKDIR /home/nrcan
 ENTRYPOINT ["terminator"]
