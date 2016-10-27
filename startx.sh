@@ -1,2 +1,2 @@
 #!/bin/bash
-/c/Program\ Files/Xming/Xming.exe -ac -multiwindow -clipboard  -dpi 108 &
+/c/Program\ Files\ \(x86\)/Xming/Xming.exe -ac -multiwindow -clipboard  -dpi 108 &
