@@ -46,7 +46,7 @@ RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 #Install VSCode and set firefox as default browser for it
 RUN set -x \
 && curl -sSL https://go.microsoft.com/fwlink/?LinkID=760868 -o /downloads/vs.deb \
-RUN ln -s /usr/bin/firefox /bin/xdg-open \
+&& ln -s /usr/bin/firefox /bin/xdg-open \
 && dpkg -i /downloads/vs.deb && apt-get clean && $clean
 
 
