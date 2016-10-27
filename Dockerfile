@@ -43,9 +43,10 @@ RUN apt-get update && $apt_install $netbeans_deps && apt-get clean && $clean
 
 #Update NodeJS
 RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-#Install VSCode
+#Install VSCode and set firefox as default browser for it
 RUN set -x \
 && curl -sSL https://go.microsoft.com/fwlink/?LinkID=760868 -o /downloads/vs.deb \
+RUN ln -s /usr/bin/firefox /bin/xdg-open \
 && dpkg -i /downloads/vs.deb && apt-get clean && $clean
 
 
@@ -67,6 +68,8 @@ RUN mkdir ~/ruby_netbeans_plugin \
 #Add regular user
 RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
 && adduser nrcan sudo
+COPY btap_utilities /home/nrcan/.btap_utilities/
+RUN chown -R nrcan:nrcan /home/nrcan/.btap_utilities
 
 USER nrcan
 # Build and install Ruby 2.0 using rbenv for flexibility
@@ -94,7 +97,7 @@ RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundatio
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
 
 #Add helper scripts to path
-COPY btap_utilities /home/nrcan/.btap_utilities/
+
 RUN echo 'PATH="~/.btap_utilities:$PATH"' >> ~/.bashrc
 
 WORKDIR /home/nrcan
