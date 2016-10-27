@@ -1,4 +1,4 @@
-#!/root/.rbenv/shims/ruby
+#!~/.rbenv/shims/ruby
 require 'zlib'
 require 'base64'
 require 'csv'
@@ -32,7 +32,7 @@ open(csvfile) do |csv|
       is_header = false
       values.each_with_index do |val,index|
         zip_index = index if val.strip == "btapresults.zipped_model_osm"
-        name = index if val.strip == "name" 
+        name = index if val.strip == "name"
       end
       raise ("Could not find name or btapresults.zipped_model_osm column in csv file.") if name < 0 or zip_index < 0
     else
@@ -45,7 +45,7 @@ open(csvfile) do |csv|
 end
 puts "Created #{osm_counter} osm files in ./osm_file folder"
 
-#Strip Zipped data from csv file otherwise it will not open in excel correctly. 
+#Strip Zipped data from csv file otherwise it will not open in excel correctly.
 original = CSV.read(csvfile, { headers: true, return_headers: true })
 original.delete('btapresults.zipped_model_osm')
 CSV.open("#{output_folder}/output.csv", 'w', col_sep: ',') do |csv|
@@ -55,4 +55,3 @@ CSV.open("#{output_folder}/output.csv", 'w', col_sep: ',') do |csv|
 end
 puts "Stripped OSM data from #{options[:filename]} and saved result to ./osm_file/output.csv. \nNow useable by Excel"
 puts "completed in #{Time.now - start} secs"
-

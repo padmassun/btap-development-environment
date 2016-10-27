@@ -64,29 +64,40 @@ RUN mkdir ~/ruby_netbeans_plugin \
 && unzip ~/ruby_netbeans_plugin/ruby_netbeans.zip -d ~/ruby_netbeans_plugin \
 && rm ~/ruby_netbeans_plugin/ruby_netbeans.zip
 
-#Build and install Ruby 2.0 using rbenv for flexibility for user.
-RUN echo 'PATH="~/.rbenv/bin:~/.rbenv/shims:$PATH"' >> ~/.bashrc \
+#Add regular user
+RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
+&& adduser nrcan sudo
+
+USER nrcan
+# Build and install Ruby 2.0 using rbenv for flexibility
+RUN git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+RUN git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+RUN RUBY_CONFIGURE_OPTS=--enable-shared ~/.rbenv/bin/rbenv install 2.0.0-p594
+RUN ~/.rbenv/bin/rbenv global 2.0.0-p594
+
+# Ruby paths
+RUN echo 'export PATH="~/.rbenv/bin:~/.rbenv/shims:$PATH"' >> ~/.bashrc \
 && echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 
 #Install gems for user.
 RUN ~/.rbenv/shims/gem install bundler debase debride fasterer rcodetools rubocop ruby-beautify ruby-debug-ide ruby-lint
 
+WORKDIR /home/nrcan
 
-#add regular user
-RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
-&& adduser nrcan sudo
+# Add RUBYLIB link for openstudio.rb
+ENV RUBYLIB /usr/local/lib/site_ruby/2.0.0
+
 # Add extensions to nrcan vscode installation.
 RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf ; \
-    do code --user-data-dir='.' --install-extension  $ext; done
-RUN echo 'alias code="code --user-data-dir='.'  "' >> ~/.bashrc
+    do code --install-extension  $ext; done
 #Add netbeans to nrcan's path in bashrc.
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
 
 #Add helper scripts to path
-COPY btap_utilities /root/.btap_utilities/
+COPY btap_utilities /home/nrcan/.btap_utilities/
 RUN echo 'PATH="~/.btap_utilities:$PATH"' >> ~/.bashrc
 
-WORKDIR /root
+WORKDIR /home/nrcan
 ENTRYPOINT ["terminator"]
 # docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
 # /c/Program\ Files/Xming/Xming.exe -ac -multiwindow -clipboard
