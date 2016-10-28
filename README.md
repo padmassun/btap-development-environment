@@ -63,7 +63,7 @@ After you start the container, you should see a new terminal with a red bar over
 ### Windows Interop
 The container was set up to be linked to your C:\User\<Username> folder on windows. If you perform a directory listing "ls -l" and hit enter you should see a listing of files and folders. One of these folders is called 'windows-host' this is your shared folder to windows.  If you ls that directory, you should see your host windows user folders. The neat thing is that you can interact with that folder like it was a mounted drive.
 ## Openstudio
-OpenStudio is installed in the image, and the default ruby implemenation is linked to OpenStudio as well, so you can run ruby scripts easiy. You may also run OpenStudio by typing the following at the command prompt.
+OpenStudio is installed in the image, and the default ruby implemenation is linked to OpenStudio as well, so you can run ruby scripts easiy. You may also run OpenStudio by typing the following at the command prompt. The OpenStudio version is the release version. 
 ```bash
 Openstudio &
 ```
@@ -88,6 +88,7 @@ Ruby support for Netbeans allows you to develop with Ruby and OpenStudio a bit e
 7. It will ask to restart.
 8. To-do : Add steps to remove other ruby installations form neteans!!
 
+### To-do : cloning the repositories in windows-host
 ### To-do : Creating an new netbeans project using existing sources
 ### To-do : Running the NECB archetypes locally
 ### To-do : Running the NECB archetypes on Amazon
@@ -95,3 +96,5 @@ Ruby support for Netbeans allows you to develop with Ruby and OpenStudio a bit e
 ### To-do : Adding a new NECB archetypes
 ### To-do : Converting OSM to JSON files
 ### To-do : Add nginx and mongodb for D3 student work
+### To-do : Add equest to osm as part of the btap_utilities
+
