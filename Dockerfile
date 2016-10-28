@@ -93,14 +93,23 @@ RUN mkdir ~/ruby_netbeans_plugin \
 # Add extensions to nrcan vscode installation.
 RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf ; \
     do code --install-extension  $ext; done
+
 #Add netbeans to nrcan's path in bashrc.
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
 
+
 #Add helper scripts to path
 RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc
+
 RUN git clone https://github.com/phylroy/btap_utilities.git
 
-WORKDIR /home/nrcan
+#Add Git support and color to bash
+RUN cp /usr/lib/git-core/git-sh-prompt ~/.git-prompt.sh
+RUN echo 'source ~/.git-prompt.sh' >> ~/.bashrc \
+&& echo 'red=$(tput setaf 1) && green=$(tput setaf 2) && yellow=$(tput setaf 3) &&  blue=$(tput setaf 4) && magenta=$(tput setaf 5) && reset=$(tput sgr0) && bold=$(tput bold)' >> ~/.bashrc \
+&& echo PS1=\''\[$magenta\]\u\[$reset\]@\[$green\]\h\[$reset\]:\[$blue\]\w\[$reset\]\[$yellow\][$(__git_ps1 "%s")]\[$reset\]\$'\' >> ~/.bashrc 
+
+
 ENTRYPOINT ["terminator"]
 # docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
 # /c/Program\ Files/Xming/Xming.exe -ac -multiwindow -clipboard
