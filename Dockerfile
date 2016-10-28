@@ -101,13 +101,16 @@ RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
 #Add helper scripts to path
 RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc
 
-RUN git clone https://github.com/phylroy/btap_utilities.git
+#This will allow us to run scripts based on openstudio-standard gem source code
+RUN git clone https://github.com/phylroy/btap_utilities.git && cd btap_utilities && chmod 774 *  && ./btap_gem_update_standards.sh
+
+
 
 #Add Git support and color to bash
 RUN cp /usr/lib/git-core/git-sh-prompt ~/.git-prompt.sh
 RUN echo 'source ~/.git-prompt.sh' >> ~/.bashrc \
 && echo 'red=$(tput setaf 1) && green=$(tput setaf 2) && yellow=$(tput setaf 3) &&  blue=$(tput setaf 4) && magenta=$(tput setaf 5) && reset=$(tput sgr0) && bold=$(tput bold)' >> ~/.bashrc \
-&& echo PS1=\''\[$magenta\]\u\[$reset\]@\[$green\]\h\[$reset\]:\[$blue\]\w\[$reset\]\[$yellow\][$(__git_ps1 "%s")]\[$reset\]\$'\' >> ~/.bashrc 
+&& echo PS1=\''\[$magenta\]\u\[$reset\]@\[$green\]\h\[$reset\]:\[$blue\]\w\[$reset\]\[$yellow\][$(__git_ps1 "%s")]\[$reset\]\$'\' >> ~/.bashrc
 
 
 ENTRYPOINT ["terminator"]

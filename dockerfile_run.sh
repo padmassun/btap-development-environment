@@ -1,5 +1,5 @@
 #!/bin/bash
-linux_home_folder=/root
+linux_home_folder=/home/nrcan
 this_user=$(whoami)
 x_display=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}')
 container_name=dockerfile_btap_dev
