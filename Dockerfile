@@ -102,7 +102,7 @@ RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
 RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc
 
 #This will allow us to run scripts based on openstudio-standard gem source code
-RUN git clone https://github.com/phylroy/btap_utilities.git && cd btap_utilities && chmod 774 *  && ./btap_gem_update_standards.sh
+RUN git clone https://github.com/phylroy/btap_utilities.git && cd btap_utilities && chmod  774 *  && ./btap_gem_update_standards.sh
 
 
 
