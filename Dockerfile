@@ -34,8 +34,8 @@ RUN mkdir /downloads
 # Add ability to add ubuntu repositories required for development.
 
 RUN apt-get update && $apt_install $software $repository_utilities $vscode_deps && apt-get clean && $clean \
-&& apt-get update && add-apt-repository ppa:webupd8team/java -y && apt-get update \
-&& (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) && apt-get install -y oracle-java8-installer oracle-java8-set-default
+&& apt-get update && add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa && apt-get update \
+&& (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) && apt-get install -y oracle-java8-installer oracle-java8-set-default git
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 ENV PATH $JAVA_HOME/bin:$PATH
 RUN apt-get update && $apt_install $netbeans_deps && apt-get clean && $clean
