@@ -1,0 +1,18 @@
+[url "https://github.com/NREL/OpenStudio.git"]
+    insteadOf = nrel://
+
+
+[alias]
+  os = clone https://github.com/NREL/OpenStudio.git
+  os-standards = clone https://github.com/NREL/openstudio-standards.git
+  os-ptool =clone https://github.com/NREL/OpenStudio-PTool.git
+  nrcan-ptool = clone https://github.com/phylroy/OpenStudio-PTool.git
+  os-measures = clone https://github.com/NREL/OpenStudio-measures.git
+  os-spreadsheet = https://github.com/NREL/OpenStudio-analysis-spreadsheet.git
+  co = checkout
+  ci = commit
+  st = status
+  br = branch
+  hist = log --pretty=format:\"%C(yellow)%h %ad | %C(reset)%sd %C(green)[%an]\" --date=short --graph
+  type = cat-file -t
+  dump = cat-file -p
