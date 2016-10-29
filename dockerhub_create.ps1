@@ -1,7 +1,7 @@
 
 Read-Host -Prompt "This will reset your development environment to the latests images from Dockerhub. Press enter to continue or close this window!"
 
-$current_user=[Environment]::UserName
+$current_user=phylr
 $linux_home_folder='/root'
 $ipconfig = $(ipconfig | where {$_ -match 'IPv4.+\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' } | select -First 1 | where {$_ -match 'IPv4.+\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' } | foreach{$Matches[1]} )
 Write-Host $ipconfig
