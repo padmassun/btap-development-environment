@@ -1,0 +1,6 @@
+Q. The windows-host directory in linux is empty.. I can't see my windows C:\users\<my-username> folder content from linux.
+* Ensure filesharing is active...You can do this by running this command as an administrator console. 
+	netsh advfirewall firewall set rule group="File and Printer Sharing" new enable=Yes 
+* Ensure that you have shared the C drive.  Open Docker settings from the windows tray application. Go to the shared drive tab and share your c: drive. 
+* Ensure that your computer name, and your user password contains only letters and numbers. 
+* Check that your firewall is not causing problems..Disable it if you have it and then try docker.  The HyperV-VM needs access to the host through tcp/ip, so maybe your firewall (or antivirus) is blocking the communication from inside the vm to outside. So just whitelist the adapter (vEthernet (DockerNAT) - Hyper-V Virtual Ethernet Adapter) in your local firewall/antivirus.
