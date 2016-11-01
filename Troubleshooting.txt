@@ -4,3 +4,4 @@ Q. The windows-host directory in linux is empty.. I can't see my windows C:\user
 * Ensure that you have shared the C drive.  Open Docker settings from the windows tray application. Go to the shared drive tab and share your c: drive. 
 * Ensure that your computer name, and your user password contains only letters and numbers. 
 * Check that your firewall is not causing problems..Disable it if you have it and then try docker.  The HyperV-VM needs access to the host through tcp/ip, so maybe your firewall (or antivirus) is blocking the communication from inside the vm to outside. So just whitelist the adapter (vEthernet (DockerNAT) - Hyper-V Virtual Ethernet Adapter) in your local firewall/antivirus.
+*Check this forum thread for more informaton https://forums.docker.com/t/volume-mounts-in-windows-does-not-work/10693/80
