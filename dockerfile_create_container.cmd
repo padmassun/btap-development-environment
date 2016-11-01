@@ -17,5 +17,6 @@ $image='dockerfile_btap_dev_image'
 Write-Host  Display for X has been determined to be ${x_display}:0
 Write-Host The  windows user is identified as $win_user
 docker rm  ${container}
-docker create -ti  -e DISPLAY=${x_display}:0.0 -v c:/Users/${win_user}:${linux_home_folder}/windows-host --name ${$container} ${image}
+Write-Host "docker create -ti  -e DISPLAY=${x_display}:0.0 -v c:/Users/${win_user}:${linux_home_folder}/windows-host --name ${container} ${image}"
+docker create -ti  -e DISPLAY=${x_display}:0.0 -v c:/Users/${win_user}:${linux_home_folder}/windows-host --name ${container} ${image}
 Read-Host -Prompt "Old container ${container} has been deleted and a replaced with a fresh container."

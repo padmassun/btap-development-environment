@@ -11,5 +11,6 @@ $x_display = $(ipconfig | where {$_ -match 'IPv4.+\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.
 $container='dockerfile_btap_dev_container' 
 $image='dockerfile_btap_dev_image'
 
+Write-Host "docker start ${container}"
 docker start ${container}
-Read-Host -Prompt "Docker started ${container} container."
+Read-Host -Prompt "Docker started ${container} container. Hit enter to continue."
