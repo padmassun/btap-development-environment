@@ -9,7 +9,7 @@ ENV DISPLAY ${DISPLAY}
 ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils'
 
 #Basic software
-ARG software='git curl zip lynx nano unzip xterm terminator firefox'
+ARG software='git curl zip lynx nano unzip xterm terminator firefox diffuse'
 
 #Netbeans Dependancies (requires $java_repositories to be set)
 ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev'
