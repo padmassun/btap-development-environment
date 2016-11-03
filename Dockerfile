@@ -91,7 +91,7 @@ RUN mkdir ~/ruby_netbeans_plugin \
 && rm ~/ruby_netbeans_plugin/ruby_netbeans.zip
 
 # Add extensions to nrcan vscode installation.
-RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf ; \
+RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf robertohuertasm.vscode-icons; \
     do code --install-extension  $ext; done
 
 #Add netbeans to nrcan's path in bashrc.
