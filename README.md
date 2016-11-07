@@ -13,7 +13,7 @@ This image, is based upon the NREL's [nrel/openstudio](https://hub.docker.com/r/
 * Enabling virutalization in your BIO (Instructions [here](https://docs.fedoraproject.org/en-US/Fedora/13/html/Virtualization_Guide/sect-Virtualization-Troubleshooting-Enabling_Intel_VT_and_AMD_V_virtualization_hardware_extensions_in_BIOS.html))
 * Admin rights
 * Install [Docker Toolbox for Windows](https://docs.docker.com/toolbox/toolbox_install_windows/)
-* Install [Xming v6 X11 server](http://sourceforge.net/projects/xming/files/Xming/6.9.0.31/Xming-6-9-0-31-setup.exe/download) Note: If you wish to use electron applications like Slack, Visual Studio Code, you will need the donation verion of [Xming v7.7+](http://www.straightrunning.com/XmingNotes/#head-16) 
+* Install [Xming v6 X11 server](http://sourceforge.net/projects/xming/files/Xming/6.9.0.31/Xming-6-9-0-31-setup.exe/download) Note: If you wish to use electron applications like Slack, Visual Studio Code, you will need the donation version of [Xming v7.7+](http://www.straightrunning.com/XmingNotes/#head-16) 
 
 
 # Creating a Workspace in 5 Steps
