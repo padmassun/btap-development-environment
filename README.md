@@ -16,11 +16,10 @@ This image, is based upon the NREL's [nrel/openstudio](https://hub.docker.com/r/
 * Install [Xming v6 X11 server](http://sourceforge.net/projects/xming/files/Xming/6.9.0.31/Xming-6-9-0-31-setup.exe/download) Note: If you wish to use electron applications like Slack, Visual Studio Code, you will need the donation verion of [Xming v7.7+](http://www.straightrunning.com/XmingNotes/#head-16) 
 
 
-# Creating a workspace
+# Creating a Workspace in 5 Steps
 
 ## Step 0 Clone Repository
 
-### Clone repository
 1. Launch the Docker Quickstart Terminal (as seen in install instructions)
 2. Make a projects folder in your C:\Users\username folder then go into it.
 ```bash
@@ -50,18 +49,18 @@ BCC has very slow internet speed. To speed up very long download times, a versio
 cd /c/Users/$(whoami)/projects/btap-development-environment && ./2-dockerfile_canmet_fast_build_image.sh
 ```
 ## Step 3 Create a workspace container
-This will create a container that you can do development in. You can create many containers based on the image that we created above. We will call this container workspace
+This will create a container that you can do development in. You can create many containers based on the image that we created above. We will call this container *my_workspace*
 ```bash
 cd /c/Users/$(whoami)/projects/btap-development-environment && ./3-dockerfile_create_container.sh my_workspace
 ```
 ## Step 4 Start Your Container
-You can now just start your container by your container name, in this case it is workspace
+You can now just start your container by your container name, in this case it is *my_workspace*
 ```bash
-cd /c/Users/$(whoami)/projects/btap-development-environment && ./4-dockerfile_start_container.sh
+cd /c/Users/$(whoami)/projects/btap-development-environment && ./4-dockerfile_start_container.sh my_workspace
 ```
 # Basic Usage
 After you start the container, you should see a new terminal with a red bar over that top. This is your X terminal called 'terminator this where you can execute linux commands. There are numerous tutorials on the linux console that we will not go into here.
-### Windows Interop
+## Windows Interop
 The container was set up to be linked to your C:\User\<your windows username> folder on windows. If you perform a directory listing "ls -l" and hit enter you should see a listing of files and folders. One of these folders is called 'windows-host' this is your shared folder to windows.  If you ls that directory, you should see your host windows user folders. The neat thing is that you can interact with that folder like it was a mounted drive.
 ## Openstudio
 OpenStudio is installed in the image, and the default ruby implemenation is linked to OpenStudio as well, so you can run ruby scripts easiy. You may also run OpenStudio by typing the following at the command prompt. The OpenStudio version is the release version. 
