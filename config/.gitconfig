@@ -9,7 +9,7 @@
   os-measures = clone https://github.com/NREL/OpenStudio-measures.git
   os-spreadsheet = https://github.com/NREL/OpenStudio-analysis-spreadsheet.git
   nrcan-ptool = clone https://github.com/phylroy/OpenStudio-PTool.git
-  nrcan-standards = clone https://github.com/NREL/openstudio-standards.git -b migrate_necb_loads_to_standards 
+  nrcan-standards = clone https://github.com/NREL/openstudio-standards.git -b nrcan 
   co = checkout
   ci = commit
   st = status
