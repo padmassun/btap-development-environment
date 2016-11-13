@@ -9,17 +9,21 @@ ENV DISPLAY ${DISPLAY}
 ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils'
 
 #Basic software
-ARG software='git curl zip lynx nano unzip xterm terminator firefox diffuse mongodb-org'
+ARG software='git curl zip lynx nano unzip xterm terminator firefox diffuse mongodb-org postgresql postgresql-contrib'
 
 #Netbeans Dependancies (requires $java_repositories to be set)
-ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev'
+ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev oracle-java8-set-default'
 
 #VCCode Dependancies
 ARG vscode_deps='curl libc6-dev nodejs npm libasound2 libgconf-2-4 libgnome-keyring-dev libgtk2.0-0 libnss3 libpci3  libxtst6 libcanberra-gtk-module libnotify4 libxss1 wget'
 #Java repositories needed for Netbeans
 
-#Purge software list
+#Purge software 
 ARG intial_purge_software='openjdk*'
+
+#set Java ENV
+ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
+ENV PATH $JAVA_HOME/bin:$PATH
 
 #Ubuntu install commands
 ARG apt_install='apt-get install -y --no-install-recommends'
@@ -30,52 +34,60 @@ ARG clean='rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /downloads/*'
 #Create folder for downloads
 RUN mkdir /downloads
 
-
 # Add ability to add ubuntu repositories required for development.
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-RUN echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.0.list
 
-RUN apt-get update && $apt_install $software $repository_utilities $vscode_deps && apt-get clean && $clean \
-&& apt-get update && add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa  && apt-get update \
-&& (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) && apt-get install -y oracle-java8-installer oracle-java8-set-default git
-ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
-ENV PATH $JAVA_HOME/bin:$PATH
-RUN apt-get update && $apt_install $netbeans_deps && apt-get clean && $clean
-
-#Create Mongodb folder and expose Mongo port
-RUN mkdir -p /data/db
-EXPOSE 27017
-
+# Add mongo and postgresql database software repositories.
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 \
+&& echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.0.list \
+&& sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' \
+&& curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - \
+&& apt-get update \
+&& $apt_install $repository_utilities \
+&& add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa \ 
+&& apt-get update \
+&& (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) \
+&& apt-get update && $apt_install $software $vscode_deps $netbeans_deps \
+&& apt-get clean && $clean
 
 #Update NodeJS and express
 RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - \
-&& ln -s `which nodejs` /usr/bin/node \
-&& npm install -g express-generator && npm install -g nodemon
+&& ln -s `which nodejs` /usr/bin/node \ 
+&& npm install -g express-generator nodemon
 EXPOSE 3000
 
-#Install VSCode and set firefox as default browser for it
+#Install VSCode and set firefox as default browser for it Also install Netbeans
 RUN set -x \
 && curl -sSL https://go.microsoft.com/fwlink/?LinkID=760868 -o /downloads/vs.deb \
 && ln -s /usr/bin/firefox /bin/xdg-open \
-&& dpkg -i /downloads/vs.deb && apt-get clean && $clean
-
-
-#ensure OS is part of the ruby lib
-RUN echo 'export RUBYLIB="/usr/local/lib/site_ruby/2.0.0"' >> ~/.bashrc
+&& dpkg -i /downloads/vs.deb \
+&& rm /downloads/vs.deb \
+&& apt-get clean && $clean
 
 #Install Netbeans.
 RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8.2-php-linux-x64.sh -o /downloads/netbeans.sh \
 && chmod +x /downloads/netbeans.sh \
 && /downloads/netbeans.sh --silent \
+&& rm /downloads/netbeans.sh \
 && apt-get clean && $clean
-
-
 
 #Add regular user
 RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
 && adduser nrcan sudo
 
+#Create Mongodb folder and expose Mongo port
+RUN mkdir -p /data/db && chown nrcan /data/db
+EXPOSE 27017
+
+#Configure Postgres
+RUN mkdir -p /data/pgsql && chown nrcan /data/pgsql
 USER nrcan
+RUN /usr/lib/postgresql/9.6/bin/initdb -D /data/pgsql
+
+USER nrcan
+# Add RUBYLIB link for openstudio.rb
+RUN echo 'export RUBYLIB="/usr/local/lib/site_ruby/2.0.0"' >> ~/.bashrc
+ENV RUBYLIB /usr/local/lib/site_ruby/2.0.0
+
 # Build and install Ruby 2.0 using rbenv for flexibility
 RUN git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
 RUN git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
@@ -91,42 +103,31 @@ RUN ~/.rbenv/shims/gem install bundler debase debride fasterer rcodetools ruboco
 
 WORKDIR /home/nrcan
 
-# Add RUBYLIB link for openstudio.rb
-ENV RUBYLIB /usr/local/lib/site_ruby/2.0.0
-
-#Download Ruby plugin for Netbeans (user needs to install manually on their own.)
+#Download Ruby plugin for Netbeans (user needs to install manually on their own.) and extensions for vscode
 RUN mkdir ~/ruby_netbeans_plugin \
 && curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o ~/ruby_netbeans_plugin/ruby_netbeans.zip \
 && unzip ~/ruby_netbeans_plugin/ruby_netbeans.zip -d ~/ruby_netbeans_plugin \
-&& rm ~/ruby_netbeans_plugin/ruby_netbeans.zip
+&& rm ~/ruby_netbeans_plugin/ruby_netbeans.zip \
+&& for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf robertohuertasm.vscode-icons; do code --install-extension  $ext; done
 
-# Add extensions to nrcan vscode installation.
-RUN for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf robertohuertasm.vscode-icons; \
-    do code --install-extension  $ext; done
-
-#Add netbeans to nrcan's path in bashrc.
-RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc
-
-
-#Add helper scripts to path
-RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc
-
-#This will allow us to run scripts based on openstudio-standard gem source code
-RUN git clone https://github.com/phylroy/btap_utilities.git && cd ~/btap_utilities && chmod  774 *  && ./btap_gem_update_standards.sh
-
-#This will configure some environments for the user (VSCode) 
-RUN cd ~/btap_utilities && ./configure_user.sh
+#Add netbeans, postgres and help script to bashrc.
+RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc \
+&& echo 'PATH="/usr/lib/postgresql/9.6/bin:$PATH"' >> ~/.bashrc \
+&& echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
+&& git clone https://github.com/phylroy/btap_utilities.git && cd ~/btap_utilities && chmod  774 *  && ./btap_gem_update_standards.sh \
+&& cd ~/btap_utilities && ./configure_user.sh
 
 
 #Add Git support and color to bash
-RUN cp /usr/lib/git-core/git-sh-prompt ~/.git-prompt.sh
-RUN echo 'source ~/.git-prompt.sh' >> ~/.bashrc \
+RUN cp /usr/lib/git-core/git-sh-prompt ~/.git-prompt.sh \
+&& echo 'source ~/.git-prompt.sh' >> ~/.bashrc \
 && echo 'red=$(tput setaf 1) && green=$(tput setaf 2) && yellow=$(tput setaf 3) &&  blue=$(tput setaf 4) && magenta=$(tput setaf 5) && reset=$(tput sgr0) && bold=$(tput bold)' >> ~/.bashrc \
 && echo PS1=\''\[$magenta\]\u\[$reset\]@\[$green\]\h\[$reset\]:\[$blue\]\w\[$reset\]\[$yellow\][$(__git_ps1 "%s")]\[$reset\]\$'\' >> ~/.bashrc
 COPY config/.gitconfig /home/nrcan 
 USER root
 RUN chown nrcan:nrcan /home/nrcan/.gitconfig
 USER nrcan
+
 #Add openstudio and openstudio-standards to pry and irb config files.
 RUN echo require \'openstudio\' >> ~/.pryrc \
 && echo require \'openstudio-standards\' >>~/.pryrc \
