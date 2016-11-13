@@ -48,8 +48,10 @@ EXPOSE 27017
 
 
 #Update NodeJS and express
-RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
-RUN npm install -g express-generator
+RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - \
+&& ln -s `which nodejs` /usr/bin/node \
+&& npm install -g express-generator && npm install -g nodemon
+EXPOSE 3000
 
 #Install VSCode and set firefox as default browser for it
 RUN set -x \
