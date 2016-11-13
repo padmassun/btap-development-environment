@@ -9,7 +9,7 @@ ENV DISPLAY ${DISPLAY}
 ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils'
 
 #Basic software
-ARG software='git curl zip lynx nano unzip xterm terminator firefox diffuse'
+ARG software='git curl zip lynx nano unzip xterm terminator firefox diffuse mongodb-org'
 
 #Netbeans Dependancies (requires $java_repositories to be set)
 ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev'
@@ -32,17 +32,25 @@ RUN mkdir /downloads
 
 
 # Add ability to add ubuntu repositories required for development.
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+RUN echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.0.list
 
 RUN apt-get update && $apt_install $software $repository_utilities $vscode_deps && apt-get clean && $clean \
-&& apt-get update && add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa && apt-get update \
+&& apt-get update && add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa  && apt-get update \
 && (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) && apt-get install -y oracle-java8-installer oracle-java8-set-default git
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 ENV PATH $JAVA_HOME/bin:$PATH
 RUN apt-get update && $apt_install $netbeans_deps && apt-get clean && $clean
 
+#Create Mongodb folder and expose Mongo port
+RUN mkdir -p /data/db
+EXPOSE 27017
 
-#Update NodeJS
+
+#Update NodeJS and express
 RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+RUN npm install -g express-generator
+
 #Install VSCode and set firefox as default browser for it
 RUN set -x \
 && curl -sSL https://go.microsoft.com/fwlink/?LinkID=760868 -o /downloads/vs.deb \
