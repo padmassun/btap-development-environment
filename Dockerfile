@@ -18,6 +18,9 @@ ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev
 ARG vscode_deps='curl libc6-dev nodejs npm libasound2 libgconf-2-4 libgnome-keyring-dev libgtk2.0-0 libnss3 libpci3  libxtst6 libcanberra-gtk-module libnotify4 libxss1 wget'
 #Java repositories needed for Netbeans
 
+#D3 parallel coordinates deps due to canvas deps
+ARG d3_deps='libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++'
+
 #Purge software 
 ARG intial_purge_software='openjdk*'
 
@@ -46,7 +49,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 \
 && add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa \ 
 && apt-get update \
 && (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) \
-&& apt-get update && $apt_install $software $vscode_deps $netbeans_deps \
+&& apt-get update && $apt_install $software $vscode_deps $netbeans_deps $d3_deps \
 && apt-get clean && $clean
 
 #Update NodeJS and express
