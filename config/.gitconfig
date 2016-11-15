@@ -10,7 +10,8 @@
   os-spreadsheet = https://github.com/NREL/OpenStudio-analysis-spreadsheet.git
   nrcan-ptool = clone https://github.com/phylroy/OpenStudio-PTool.git
   nrcan-standards = clone https://github.com/NREL/openstudio-standards.git -b nrcan 
-  nrcan-vis = https://github.com/phylroy/parallel-coordinates.git
+  nrcan-vis-pc = clone https://github.com/phylroy/parallel-coordinates.git
+  nrcan-vis-sankey = clone https://github.com/phylroy/d3-sankey.git
   co = checkout
   ci = commit
   st = status
