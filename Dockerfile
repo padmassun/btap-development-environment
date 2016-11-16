@@ -126,10 +126,6 @@ RUN cp /usr/lib/git-core/git-sh-prompt ~/.git-prompt.sh \
 && echo 'source ~/.git-prompt.sh' >> ~/.bashrc \
 && echo 'red=$(tput setaf 1) && green=$(tput setaf 2) && yellow=$(tput setaf 3) &&  blue=$(tput setaf 4) && magenta=$(tput setaf 5) && reset=$(tput sgr0) && bold=$(tput bold)' >> ~/.bashrc \
 && echo PS1=\''\[$magenta\]\u\[$reset\]@\[$green\]\h\[$reset\]:\[$blue\]\w\[$reset\]\[$yellow\][$(__git_ps1 "%s")]\[$reset\]\$'\' >> ~/.bashrc
-COPY config/.gitconfig /home/nrcan 
-USER root
-RUN chown nrcan:nrcan /home/nrcan/.gitconfig
-USER nrcan
 
 #Add openstudio and openstudio-standards to pry and irb config files.
 RUN echo require \'openstudio\' >> ~/.pryrc \
