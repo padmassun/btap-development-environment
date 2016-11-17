@@ -111,7 +111,7 @@ RUN mkdir ~/ruby_netbeans_plugin \
 && curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o ~/ruby_netbeans_plugin/ruby_netbeans.zip \
 && unzip ~/ruby_netbeans_plugin/ruby_netbeans.zip -d ~/ruby_netbeans_plugin \
 && rm ~/ruby_netbeans_plugin/ruby_netbeans.zip \
-&& for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf robertohuertasm.vscode-icons; do code --install-extension  $ext; done
+&& for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf robertohuertasm.vscode-icons Tyriar.sort-lines; do code --install-extension  $ext; done
 
 #Add netbeans, postgres and help script to bashrc.
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc \
