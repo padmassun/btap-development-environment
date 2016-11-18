@@ -114,8 +114,9 @@ RUN mkdir ~/ruby_netbeans_plugin \
 && rm ~/ruby_netbeans_plugin/ruby_netbeans.zip \
 && for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf robertohuertasm.vscode-icons Tyriar.sort-lines; do code --install-extension  $ext; done
 
-#Add netbeans, postgres and help script to bashrc.
+#Add E+ netbeans, postgres and help script to bashrc.
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc \
+&& echo  PATH="\"`find  /usr/local/share/openstudio*/EnergyPlus* -maxdepth 0`:\$PATH\"" >> ~/.bashrc \
 && echo 'PATH="/usr/lib/postgresql/9.6/bin:$PATH"' >> ~/.bashrc \
 && echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
 && git clone https://github.com/phylroy/btap_utilities.git && cd ~/btap_utilities && chmod  774 *  && ./btap_gem_update_standards.sh \
