@@ -14,6 +14,16 @@ ARG software='git curl zip lynx nano unzip xterm terminator firefox diffuse mong
 #Netbeans Dependancies (requires $java_repositories to be set)
 ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev oracle-java8-set-default'
 
+# R deps
+ARG r_deps='autoconf bison build-essential bzip2 ca-certificates curl imagemagick gdebi-core git libbz2-dev libcurl4-openssl-dev libgdbm3 libgdbm-dev libglib2.0-dev \
+libncurses-dev libreadline-dev libxml2-dev libxslt-dev libffi-dev libssl-dev libyaml-dev procps ruby ruby-dev tar unzip wget zip zlib1g-dev debhelper \
+fonts-cabin fonts-comfortaa fonts-droid fonts-font-awesome fonts-freefont-otf fonts-freefont-ttf fonts-gfs-artemisia fonts-gfs-complutum fonts-gfs-didot \
+fonts-gfs-neohellenic fonts-gfs-olga fonts-gfs-solomos fonts-inconsolata fonts-junicode fonts-lato fonts-linuxlibertine fonts-lobster fonts-lobstertwo fonts-oflb-asana-math \
+fonts-sil-gentium fonts-sil-gentium-basic fonts-stix gfortran gir1.2-freedesktop gir1.2-pango-1.0 libblas3 libcairo-script-interpreter2 libcairo2-dev libgs9 \
+libintl-perl libjbig-dev libjpeg-dev libkpathsea6 liblapack-dev liblzma-dev libpoppler44 libtcl8.5 libtiff5-dev libtk8.5 libxml-libxml-perl libxss1 libxt-dev \
+mpack tcl8.5 tcl8.5-dev tk8.5 tk8.5-dev ttf-adf-accanthis ttf-adf-gillius'
+
+
 #VCCode Dependancies
 ARG vscode_deps='curl libc6-dev nodejs npm libasound2 libgconf-2-4 libgnome-keyring-dev libgtk2.0-0 libnss3 libpci3  libxtst6 libcanberra-gtk-module libnotify4 libxss1 wget'
 #Java repositories needed for Netbeans
@@ -29,7 +39,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 ENV PATH $JAVA_HOME/bin:$PATH
 
 #Ubuntu install commands
-ARG apt_install='apt-get install -y --no-install-recommends'
+ARG apt_install='apt-get install -y --no-install-recommends --force-yes'
 
 #Ubuntu install clean up command
 ARG clean='rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /downloads/*'
@@ -46,11 +56,33 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 \
 && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - \
 && apt-get update \
 && $apt_install $repository_utilities \
-&& add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa \ 
+&& add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa && add-apt-repository ppa:ubuntu-mozilla-daily/firefox-aurora \ 
 && apt-get update \
 && (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) \
-&& apt-get update && $apt_install $software $vscode_deps $netbeans_deps $d3_deps \
+&& apt-get update && $apt_install $software $vscode_deps $netbeans_deps $d3_deps $r_deps \
 && apt-get clean && $clean
+
+#### Build R and install R packages.
+ENV R_VERSION 3.2.3
+ENV R_MAJOR_VERSION 3
+ENV R_SHA b93b7d878138279234160f007cb9b7f81b8a72c012a15566e9ec5395cfd9b6c1
+RUN curl -fSL -o R.tar.gz "http://cran.fhcrc.org/src/base/R-$R_MAJOR_VERSION/R-$R_VERSION.tar.gz" \
+    && echo "$R_SHA R.tar.gz" | sha256sum -c - \
+    && mkdir /usr/src/R \
+    && tar -xzf R.tar.gz -C /usr/src/R --strip-components=1 \
+	&& rm R.tar.gz \
+	&& cd /usr/src/R \
+    && sed -i 's/NCONNECTIONS 128/NCONNECTIONS 2560/' src/main/connections.c \
+    && ./configure --enable-R-shlib \
+    && make -j$(nproc) \
+    && make install \
+	&& make clean
+
+# Add in the additional R packages
+ADD config/install_packages.R install_packages.R  
+RUN Rscript install_packages.R
+	
+
 
 #Update NodeJS and express
 RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - \
@@ -133,6 +165,9 @@ RUN cp /usr/lib/git-core/git-sh-prompt ~/.git-prompt.sh \
 RUN echo require \'openstudio\' >> ~/.pryrc \
 && echo require \'openstudio-standards\' >>~/.pryrc \
 && cp ~/.pryrc ~/.irbrc
+
+#Add dropbox for personalized scripts
+RUN cd ~/ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
 
 
 ENTRYPOINT ["terminator"]
