@@ -105,6 +105,12 @@ RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8
 && rm /downloads/netbeans.sh \
 && apt-get clean && $clean
 
+#Install Openstudio 2.0 for cli functionality
+RUN curl -sSL https://openstudio-builds.s3.amazonaws.com/2.xDevBuilds/OpenStudio2-1.13.0.2a84a34de5-Linux.tar.gz -o /usr/local/share/os2.tar.gz \
+&& cd /usr/local/share && tar xvfz os2.tar.gz && rm os2.tar.gz
+
+
+
 #Add regular user
 RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
 && adduser nrcan sudo
@@ -149,6 +155,7 @@ RUN mkdir ~/ruby_netbeans_plugin \
 #Add E+ netbeans, postgres and help script to bashrc.
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc \
 && echo  PATH="\"`find  /usr/local/share/openstudio*/EnergyPlus* -maxdepth 0`:\$PATH\"" >> ~/.bashrc \
+&& echo  PATH="\"`find  /usr/local/share/OpenStudio2*/bin -maxdepth 0`:\$PATH\"" >> ~/.bashrc \
 && echo 'PATH="/usr/lib/postgresql/9.6/bin:$PATH"' >> ~/.bashrc \
 && echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
 && git clone https://github.com/phylroy/btap_utilities.git && cd ~/btap_utilities && chmod  774 *  && ./btap_gem_update_standards.sh \
