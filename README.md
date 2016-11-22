@@ -10,7 +10,7 @@ This image, is based upon the NREL's [nrel/openstudio](https://hub.docker.com/r/
 
 ## Requirements
 * Windows 7+ 64 bit with a modern >=i5 computer with >=8GB RAM recommended
-* Enabling virutalization in your BIO (Instructions [here](https://docs.fedoraproject.org/en-US/Fedora/13/html/Virtualization_Guide/sect-Virtualization-Troubleshooting-Enabling_Intel_VT_and_AMD_V_virtualization_hardware_extensions_in_BIOS.html))
+* Enabling virutalization in your BIO (Instructions [here](https://docs.fedoraproject.org/en-US/Fedora/13/html/Virtualization_Guide/sect-Virtualization-Troubleshooting-Enabling_Intel_VT_and_AMD_V_virtualization_hardware_extensions_in_BIOS.html)) If you have an HP Z system like a lot of NRCan people do Enable Virtualization Technology (VTx) option when you boot your system. Hit F10 when you start your computer. In setup under Security > System Security Menu enable all VTx options.
 * Admin rights
 * Install [Docker Toolbox for Windows](https://docs.docker.com/toolbox/toolbox_install_windows/)
 * Install [Xming v6 X11 server](http://sourceforge.net/projects/xming/files/Xming/6.9.0.31/Xming-6-9-0-31-setup.exe/download) Note: If you wish to use electron applications like Slack, Visual Studio Code, you will need the donation version of [Xming v7.7+](http://www.straightrunning.com/XmingNotes/#head-16) 
