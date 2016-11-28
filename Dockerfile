@@ -56,7 +56,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 \
 && curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - \
 && apt-get update \
 && $apt_install $repository_utilities \
-&& add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa && add-apt-repository ppa:ubuntu-mozilla-daily/firefox-aurora \ 
+&& add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa && add-apt-repository  \ 
 && apt-get update \
 && (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) \
 && apt-get update && $apt_install $software $vscode_deps $netbeans_deps $d3_deps $r_deps \
