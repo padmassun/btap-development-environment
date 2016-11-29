@@ -106,7 +106,7 @@ RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8
 && apt-get clean && $clean
 
 #Install Openstudio 2.0 for cli functionality
-RUN curl -sSL https://openstudio-builds.s3.amazonaws.com/2.xDevBuilds/OpenStudio2-1.13.0.2a84a34de5-Linux.tar.gz -o /usr/local/share/os2.tar.gz \
+RUN curl -sSL https://openstudio-builds.s3.amazonaws.com/2.xDevBuilds/OpenStudio2-1.13.4.6b793270ce-Linux.tar.gz -o /usr/local/share/os2.tar.gz \
 && cd /usr/local/share && tar xvfz os2.tar.gz && rm os2.tar.gz
 
 
