@@ -1,7 +1,7 @@
 # Administrator Tasks
 
 ## Merge Master and Submit a pull request
-First clone a freash copy from the repository, then switch to the feature branch..in our case nrcan
+First clone a fresh copy from the repository, then switch to the feature branch..in our case nrcan
 ```bash
 git nrcan-standards
 git merge origin/master
