@@ -25,7 +25,7 @@ mpack tcl8.5 tcl8.5-dev tk8.5 tk8.5-dev ttf-adf-accanthis ttf-adf-gillius'
 
 
 #VCCode Dependancies
-ARG vscode_deps='curl libc6-dev nodejs npm libasound2 libgconf-2-4 libgnome-keyring-dev libgtk2.0-0 libnss3 libpci3  libxtst6 libcanberra-gtk-module libnotify4 libxss1 wget'
+ARG vscode_deps='curl libc6-dev  libasound2 libgconf-2-4 libgnome-keyring-dev libgtk2.0-0 libnss3 libpci3  libxtst6 libcanberra-gtk-module libnotify4 libxss1 wget'
 #Java repositories needed for Netbeans
 
 #D3 parallel coordinates deps due to canvas deps
@@ -85,8 +85,8 @@ RUN Rscript install_packages.R
 
 
 #Update NodeJS and express
-RUN curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - \
-&& ln -s `which nodejs` /usr/bin/node \ 
+RUN curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash - \
+&& apt-get install -y nodejs nodejs  build-essential \
 && npm install -g express-generator nodemon
 EXPOSE 3000
 
