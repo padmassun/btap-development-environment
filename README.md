@@ -98,3 +98,15 @@ Ruby support for Netbeans allows you to develop with Ruby and OpenStudio a bit e
 ### To-do : Add nginx and mongodb for D3 student work
 ### To-do : Add equest to osm as part of the btap_utilities
 
+#Troubleshooting
+## You see curl failures when building image indicating certifate failures.
+This can be due to network conflicts. This has been observed on Docker for Windows v1.12.3.  One solution found was to change the mtu value to something lower in the docker host container.  You can add this by opening the Docker setting from the tray icon, going to the Docker Deamon tab and add the MTU value like below
+```json
+{
+  "registry-mirrors": [],
+  "insecure-registries": [],
+  "debug": false,
+  "mtu": 1400
+}
+```
+
