@@ -9,7 +9,7 @@ ENV DISPLAY ${DISPLAY}
 ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils'
 
 #Basic software
-ARG software='git curl zip lynx nano unzip xterm terminator firefox diffuse mongodb-org postgresql postgresql-contrib'
+ARG software='git curl zip lynx nano unzip xterm terminator midori diffuse mongodb-org postgresql postgresql-contrib'
 
 #Netbeans Dependancies (requires $java_repositories to be set)
 ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev oracle-java8-set-default'
@@ -90,10 +90,10 @@ RUN curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash - \
 && npm install -g express-generator nodemon
 EXPOSE 3000
 
-#Install VSCode and set firefox as default browser for it Also install Netbeans
+#Install VSCode and set midori as default browser for it Also install Netbeans
 RUN set -x \
 && curl -sSL https://go.microsoft.com/fwlink/?LinkID=760868 -o /downloads/vs.deb \
-&& ln -s /usr/bin/firefox /bin/xdg-open \
+&& ln -s /usr/bin/midori /bin/xdg-open \
 && dpkg -i /downloads/vs.deb \
 && rm /downloads/vs.deb \
 && apt-get clean && $clean
