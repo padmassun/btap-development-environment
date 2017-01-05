@@ -109,4 +109,11 @@ This can be due to network conflicts. This has been observed on Docker for Windo
   "mtu": 1400
 }
 ```
+## I only have ~20GB of space in my docker machine..I need more!
+The best way to deal with this is to delete the default docker machine and create a new one with the correct size. This procudure will delete all your images and containers..so back up anything that you need! This will create a 100GB disk.  This procudure works only for Docker Toolbox and in the QuickStart Terminal. 
+```bash
+docker-machine rm default
+docker-machine create --driver virtualbox --virtualbox-disk-size "100000" default
+docker-machine env default
+```
 
