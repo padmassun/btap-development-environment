@@ -161,7 +161,6 @@ RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc \
 && git clone https://github.com/phylroy/btap_utilities.git && cd ~/btap_utilities && chmod  774 *  && ./btap_gem_update_standards.sh \
 && cd ~/btap_utilities && ./configure_user.sh
 
-
 #Add Git support and color to bash
 RUN cp /usr/lib/git-core/git-sh-prompt ~/.git-prompt.sh \
 && echo 'source ~/.git-prompt.sh' >> ~/.bashrc \
@@ -175,7 +174,6 @@ RUN echo require \'openstudio\' >> ~/.pryrc \
 
 #Add dropbox for personalized scripts
 RUN cd ~/ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
-
 
 ENTRYPOINT ["terminator"]
 # docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
