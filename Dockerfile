@@ -173,7 +173,7 @@ RUN echo require \'openstudio\' >> ~/.pryrc \
 && cp ~/.pryrc ~/.irbrc
 
 #Add dropbox for personalized scripts
-RUN cd ~/ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+#RUN cd ~/ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
 
 ENTRYPOINT ["terminator"]
 # docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
