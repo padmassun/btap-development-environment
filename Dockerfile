@@ -70,17 +70,30 @@ RUN curl -fSL -o R.tar.gz "http://cran.fhcrc.org/src/base/R-$R_MAJOR_VERSION/R-$
     && echo "$R_SHA R.tar.gz" | sha256sum -c - \
     && mkdir /usr/src/R \
     && tar -xzf R.tar.gz -C /usr/src/R --strip-components=1 \
-	&& rm R.tar.gz \
-	&& cd /usr/src/R \
+    && rm R.tar.gz \
+    && cd /usr/src/R \
     && sed -i 's/NCONNECTIONS 128/NCONNECTIONS 2560/' src/main/connections.c \
     && ./configure --enable-R-shlib \
     && make -j$(nproc) \
     && make install \
-	&& make clean
+    && make clean
 
 # Add in the additional R packages
 ADD config/install_packages.R install_packages.R  
 RUN Rscript install_packages.R
+
+#### Build sqlite with json support
+RUN curl -fSL -o sqlite.tar.gz https://www.sqlite.org/2017/sqlite-autoconf-3160200.tar.gz \ 
+    && mkdir /usr/src/sqlite3 \
+    && tar -xzf R.tar.gz -C /usr/src/sqlite3 \
+    && rm sqlite.tar.gz \
+    && cd /usr/src/sqlite3 \
+    && ./configure --prefix=/usr/local \
+    && make  source='sqlite3.c' object='sqlite3.lo' libtool=yes \
+    &&  DEPDIR=.deps depmode=none /bin/bash ./depcomp \
+    &&  /bin/bash ./libtool --tag=CC --mode=compile gcc -DPACKAGE_NAME=\"sqlite\" -DPACKAGE_TARNAME=\"sqlite\" -DPACKAGE_VERSION=\"3.9.1\" -DPACKAGE_STRING=\"sqlite\ 3.9.1\" -DPACKAGE_BUGREPORT=\"http://www.sqlite.org\" -DPACKAGE_URL=\"\" -DPACKAGE=\"sqlite\" -DVERSION=\"3.9.1\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_INTTYPES_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DHAVE_DLFCN_H=1 -DLT_OBJDIR=\".libs/\" -DHAVE_FDATASYNC=1 -DHAVE_USLEEP=1 -DHAVE_LOCALTIME_R=1 -DHAVE_GMTIME_R=1 -DHAVE_DECL_STRERROR_R=1 -DHAVE_STRERROR_R=1 -DHAVE_POSIX_FALLOCATE=1 -I. -D_REENTRANT=1 -DSQLITE_THREADSAFE=1 -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_RTREE -g -O2 -c -o sqlite3.lo sqlite3.c
+    && make install \
+    && make clean
 	
 
 
