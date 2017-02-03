@@ -151,7 +151,7 @@ RUN echo 'export PATH="~/.rbenv/bin:~/.rbenv/shims:$PATH"' >> ~/.bashrc \
 && echo 'eval "$(rbenv init -)"' >> ~/.bashrc
 
 #Install gems for user.
-RUN ~/.rbenv/shims/gem install bundler debase debride fasterer rcodetools rubocop ruby-beautify ruby-debug-ide ruby-lint pry pry-doc parallel watchr google-api-client
+RUN ~/.rbenv/shims/gem install bundler debase debride fasterer rcodetools rubocop ruby-beautify ruby-debug-ide ruby-lint pry pry-doc parallel watchr google-api-client sqlite3
 
 
 WORKDIR /home/nrcan
