@@ -88,7 +88,7 @@ RUN curl -fSL -o sqlite.tar.gz https://www.sqlite.org/2017/sqlite-autoconf-31602
     && tar -xzf sqlite.tar.gz -C /usr/src/sqlite3 \
     && rm sqlite.tar.gz \
     && cd /usr/src/sqlite3/sqlite-autoconf-3160200 \
-    && ./configure --prefix=/usr/local \
+    && ./configure --prefix=/usr/local --enable-json1 --enable-readline \
     && make  \ 
     && make install \
     && make clean
