@@ -116,10 +116,27 @@ RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8
 && rm /downloads/netbeans.sh \
 && apt-get clean && $clean
 
-#Install Openstudio 2.0 for cli functionality
-RUN curl -sSL https://openstudio-builds.s3.amazonaws.com/2.xDevBuilds/OpenStudio2-1.13.4.6b793270ce-Linux.tar.gz -o /usr/local/share/os2.tar.gz \
-&& cd /usr/local/share && tar xvfz os2.tar.gz && rm os2.tar.gz
 
+
+ENV OPENSTUDIO_VERSION 2.0.3
+ENV OPENSTUDIO_SHA 40f61c64a3
+
+# Download from S3
+ENV OPENSTUDIO_DOWNLOAD_BASE_URL https://s3.amazonaws.com/openstudio-builds/$OPENSTUDIO_VERSION
+ENV OPENSTUDIO_DOWNLOAD_FILENAME OpenStudio-$OPENSTUDIO_VERSION.$OPENSTUDIO_SHA-Linux.deb
+ENV OPENSTUDIO_DOWNLOAD_URL $OPENSTUDIO_DOWNLOAD_BASE_URL/$OPENSTUDIO_DOWNLOAD_FILENAME
+
+# Install gdebi, then download and install OpenStudio, then clean up.
+# gdebi handles the installation of OpenStudio's dependencies including Qt5,
+# Boost, and Ruby 2.0.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libboost-thread1.55.0 \
+    && curl -SLO $OPENSTUDIO_DOWNLOAD_URL \
+    && gdebi -n $OPENSTUDIO_DOWNLOAD_FILENAME \
+    && rm -f $OPENSTUDIO_DOWNLOAD_FILENAME \
+    && rm -rf /usr/SketchUpPlugin \
+    && rm -rf /var/lib/apt/lists/*
 
 
 #Add regular user
@@ -185,6 +202,38 @@ RUN echo require \'openstudio\' >> ~/.pryrc \
 
 #Add dropbox for personalized scripts
 #RUN cd ~/ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+
+USER root
+
+# Install vim
+RUN apt-get update && apt-get remove --purge -y --force-yes vim  vim-gnome vim-tiny vim-common  \
+&& $apt_install exuberant-ctags liblua5.1-dev luajit libluajit-5.1 python-dev ruby-dev libperl-dev git libncurses5-dev libgnome2-dev libgnomeui-dev libgtk2.0-dev libatk1.0-dev libbonoboui2-dev libcairo2-dev libx11-dev libxpm-dev libxt-dev \
+&& mkdir /usr/include/lua5.1/include \
+&& ln -s /usr/include/luajit-2.0 /usr/include/lua5.1/include \
+&& git clone https://github.com/vim/vim.git \ 
+&& cd vim \
+&& ./configure --with-features=huge \
+            --enable-rubyinterp \
+            --enable-largefile \
+            --disable-netbeans \
+            --enable-pythoninterp \
+            --with-python-config-dir=/usr/lib/python2.7/config \
+            --enable-perlinterp \
+            --enable-luainterp \
+            --with-luajit \
+	        --enable-gui=auto \
+            --enable-fail-if-missing \
+            --with-lua-prefix=/usr/include/lua5.1 \
+            --enable-cscope \ 
+
+&& make && make install \
+&& cd ../ rm -fr vim
+USER nrcan
+RUN git clone https://github.com/amix/vimrc.git ~/.vim_runtime
+RUN sh ~/.vim_runtime/install_awesome_vimrc.sh
+
+
+
 
 ENTRYPOINT ["terminator"]
 # docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
