@@ -230,9 +230,12 @@ RUN apt-get update && apt-get remove --purge -y --force-yes vim  vim-gnome vim-t
 && cd ../ rm -fr vim
 USER nrcan
 RUN git clone https://github.com/amix/vimrc.git ~/.vim_runtime
-RUN sh ~/.vim_runtime/install_awesome_vimrc.sh
-RUN git clone https://github.com/Shougo/neocomplete.vim.git ~/.vim_runtime/sources_non_forked/
-RUN git clone git://github.com/vim-ruby/vim-ruby.git ~/.vim_runtime/sources_non_forked/
+RUN sh /home/nrcan//.vim_runtime/install_awesome_vimrc.sh 
+RUN cd /home/nrcan/.vim_runtime/sources_non_forked \
+&& git  clone https://github.com/Shougo/neocomplete.vim.git \
+&& git  clone git://github.com/vim-ruby/vim-ruby.git \
+&& cd ~/
+ADD config/my_configs.vim /home/nrcan/.vim_runtime/my_configs.vim
 
 
 
