@@ -14,7 +14,7 @@ else
 	exit
 fi
 fi
-linux_home_folder=/home/nrcan
+linux_home_folder=/home/osdev
 x_display=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}')
 win_user=$(whoami)
 image=dockerfile_btap_dev_image

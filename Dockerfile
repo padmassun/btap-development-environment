@@ -1,4 +1,4 @@
-FROM nrel/openstudio
+FROM phylroy/docker-openstudio
 
 MAINTAINER Phylroy Lopez phylroy.lopez@canada.ca
 
@@ -116,93 +116,6 @@ RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8
 && rm /downloads/netbeans.sh \
 && apt-get clean && $clean
 
-
-
-ENV OPENSTUDIO_VERSION 2.0.3
-ENV OPENSTUDIO_SHA 40f61c64a3
-
-# Download from S3
-ENV OPENSTUDIO_DOWNLOAD_BASE_URL https://s3.amazonaws.com/openstudio-builds/$OPENSTUDIO_VERSION
-ENV OPENSTUDIO_DOWNLOAD_FILENAME OpenStudio-$OPENSTUDIO_VERSION.$OPENSTUDIO_SHA-Linux.deb
-ENV OPENSTUDIO_DOWNLOAD_URL $OPENSTUDIO_DOWNLOAD_BASE_URL/$OPENSTUDIO_DOWNLOAD_FILENAME
-
-# Install gdebi, then download and install OpenStudio, then clean up.
-# gdebi handles the installation of OpenStudio's dependencies including Qt5,
-# Boost, and Ruby 2.0.
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libboost-thread1.55.0 \
-    && curl -SLO $OPENSTUDIO_DOWNLOAD_URL \
-    && gdebi -n $OPENSTUDIO_DOWNLOAD_FILENAME \
-    && rm -f $OPENSTUDIO_DOWNLOAD_FILENAME \
-    && rm -rf /usr/SketchUpPlugin \
-    && rm -rf /var/lib/apt/lists/*
-
-
-#Add regular user
-RUN useradd -m nrcan && echo "nrcan:nrcan" | chpasswd \
-&& adduser nrcan sudo
-
-#Create Mongodb folder and expose Mongo port
-RUN mkdir -p /data/db && chown nrcan /data/db
-EXPOSE 27017
-
-#Configure Postgres
-RUN mkdir -p /data/pgsql && chown nrcan /data/pgsql
-USER nrcan
-RUN /usr/lib/postgresql/9.6/bin/initdb -D /data/pgsql
-
-USER nrcan
-# Add RUBYLIB link for openstudio.rb
-RUN echo 'export RUBYLIB="/usr/local/lib/site_ruby/2.0.0"' >> ~/.bashrc
-ENV RUBYLIB /usr/local/lib/site_ruby/2.0.0
-
-# Build and install Ruby 2.0 using rbenv for flexibility
-RUN git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
-RUN git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-RUN RUBY_CONFIGURE_OPTS=--enable-shared ~/.rbenv/bin/rbenv install 2.0.0-p594
-RUN ~/.rbenv/bin/rbenv global 2.0.0-p594
-
-# Ruby paths
-RUN echo 'export PATH="~/.rbenv/bin:~/.rbenv/shims:$PATH"' >> ~/.bashrc \
-&& echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-
-#Install gems for user.
-RUN ~/.rbenv/shims/gem install bundler debase debride fasterer rcodetools rubocop ruby-beautify ruby-debug-ide ruby-lint pry pry-doc parallel watchr google-api-client sqlite3
-
-
-WORKDIR /home/nrcan
-
-#Download Ruby plugin for Netbeans (user needs to install manually on their own.) and extensions for vscode
-RUN mkdir ~/ruby_netbeans_plugin \
-&& curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o ~/ruby_netbeans_plugin/ruby_netbeans.zip \
-&& unzip ~/ruby_netbeans_plugin/ruby_netbeans.zip -d ~/ruby_netbeans_plugin \
-&& rm ~/ruby_netbeans_plugin/ruby_netbeans.zip \
-&& for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf robertohuertasm.vscode-icons Tyriar.sort-lines; do code --install-extension  $ext; done
-
-#Add E+ netbeans, postgres and help script to bashrc.
-RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc \
-&& echo  PATH="\"`find  /usr/local/share/openstudio*/EnergyPlus* -maxdepth 0`:\$PATH\"" >> ~/.bashrc \
-&& echo  PATH="\"`find  /usr/local/share/OpenStudio2*/bin -maxdepth 0`:\$PATH\"" >> ~/.bashrc \
-&& echo 'PATH="/usr/lib/postgresql/9.6/bin:$PATH"' >> ~/.bashrc \
-&& echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
-&& git clone https://github.com/phylroy/btap_utilities.git && cd ~/btap_utilities && chmod  774 *  && ./btap_gem_update_standards.sh \
-&& cd ~/btap_utilities && ./configure_user.sh
-
-#Add Git support and color to bash
-RUN cp /usr/lib/git-core/git-sh-prompt ~/.git-prompt.sh \
-&& echo 'source ~/.git-prompt.sh' >> ~/.bashrc \
-&& echo 'red=$(tput setaf 1) && green=$(tput setaf 2) && yellow=$(tput setaf 3) &&  blue=$(tput setaf 4) && magenta=$(tput setaf 5) && reset=$(tput sgr0) && bold=$(tput bold)' >> ~/.bashrc \
-&& echo PS1=\''\[$magenta\]\u\[$reset\]@\[$green\]\h\[$reset\]:\[$blue\]\w\[$reset\]\[$yellow\][$(__git_ps1 "%s")]\[$reset\]\$'\' >> ~/.bashrc
-
-#Add openstudio and openstudio-standards to pry and irb config files.
-RUN echo require \'openstudio\' >> ~/.pryrc \
-&& echo require \'openstudio-standards\' >>~/.pryrc \
-&& cp ~/.pryrc ~/.irbrc
-
-#Add dropbox for personalized scripts
-#RUN cd ~/ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
-
 USER root
 
 # Install vim
@@ -228,21 +141,36 @@ RUN apt-get update && apt-get remove --purge -y --force-yes vim  vim-gnome vim-t
 
 && make && make install \
 && cd ../ rm -fr vim
-USER nrcan
+
+USER  osdev
+WORKDIR /home/osdev
+
+#Download Ruby plugin for Netbeans (user needs to install manually on their own.) and extensions for vscode
+RUN mkdir ~/ruby_netbeans_plugin \
+&& curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o ~/ruby_netbeans_plugin/ruby_netbeans.zip \
+&& unzip ~/ruby_netbeans_plugin/ruby_netbeans.zip -d ~/ruby_netbeans_plugin \
+&& rm ~/ruby_netbeans_plugin/ruby_netbeans.zip \
+&& for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf robertohuertasm.vscode-icons Tyriar.sort-lines; do code --install-extension  $ext; done
+
+#Add E+ netbeans, postgres and help script to bashrc.
+RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc \
+&& echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
+&& git clone https://github.com/phylroy/btap_utilities.git \
+&& cd ~/btap_utilities && chmod  774 *  \
+# && /bin/bash -c "source /etc/user_config_bashrc && ./btap_gem_update_standards.sh" \
+&& cd ~/btap_utilities && ./configure_user.sh
+
+
+#Add dropbox for personalized scripts
+#RUN cd ~/ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
+
 RUN git clone https://github.com/amix/vimrc.git ~/.vim_runtime
-RUN sh /home/nrcan//.vim_runtime/install_awesome_vimrc.sh 
-RUN cd /home/nrcan/.vim_runtime/sources_non_forked \
+RUN sh /home/osdev/.vim_runtime/install_awesome_vimrc.sh 
+RUN cd /home/osdev/.vim_runtime/sources_non_forked \
 && git  clone https://github.com/Shougo/neocomplete.vim.git \
 && git  clone git://github.com/vim-ruby/vim-ruby.git \
 && cd ~/
-ADD config/my_configs.vim /home/nrcan/.vim_runtime/my_configs.vim
-
-
-
-
+ADD config/my_configs.vim /home/osdev/.vim_runtime/my_configs.vim
 
 ENTRYPOINT ["terminator"]
-# docker rm $(docker ps -a -q) && docker rmi $(docker images -q)
-# /c/Program\ Files/Xming/Xming.exe -ac -multiwindow -clipboard
-# docker build --build-arg DISPLAY=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}'):0.0 -t openstudio-dev .
-# docker run -ti -e DISPLAY=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}'):0.0 openstudio-dev
+
