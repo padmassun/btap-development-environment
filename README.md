@@ -27,7 +27,7 @@ mkdir /c/Users/$(whoami)/projects && cd /c/Users/$(whoami)/projects
 ```
 3.    Clone this rep and then enter that folder.
 ```bash
-git clone https://github.com/phylroy/btap-development-environment.git && cd btap-development-environment
+git clone https://github.com/canmet-energy/btap-development-environment.git && cd btap-development-environment
 ```
 
 ## Step 1 Ensure your Environment is Clean
