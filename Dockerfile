@@ -155,22 +155,10 @@ RUN mkdir ~/ruby_netbeans_plugin \
 #Add E+ netbeans, postgres and help script to bashrc.
 RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc \
 && echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
-&& git clone https://github.com/phylroy/btap_utilities.git \
+&& git clone https://github.com/canmet-energy/btap_utilities.git \
 && cd ~/btap_utilities && chmod  774 *  \
 # && /bin/bash -c "source /etc/user_config_bashrc && ./btap_gem_update_standards.sh" \
 && cd ~/btap_utilities && ./configure_user.sh
-
-
-#Add dropbox for personalized scripts
-#RUN cd ~/ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86_64" | tar xzf -
-
-RUN git clone https://github.com/amix/vimrc.git ~/.vim_runtime
-RUN sh /home/osdev/.vim_runtime/install_awesome_vimrc.sh 
-RUN cd /home/osdev/.vim_runtime/sources_non_forked \
-&& git  clone https://github.com/Shougo/neocomplete.vim.git \
-&& git  clone git://github.com/vim-ruby/vim-ruby.git \
-&& cd ~/
-ADD config/my_configs.vim /home/osdev/.vim_runtime/my_configs.vim
 
 ENTRYPOINT ["terminator"]
 
