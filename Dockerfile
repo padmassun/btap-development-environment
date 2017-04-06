@@ -9,7 +9,7 @@ ENV DISPLAY ${DISPLAY}
 ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils'
 
 #Basic software
-ARG software='git curl zip lynx nano unzip xterm terminator midori diffuse mongodb-org postgresql postgresql-contrib'
+ARG software='git curl zip lynx nano unzip xterm terminator midori diffuse mongodb-org postgresql postgresql-contrib silversearcher-ag'
 
 #Netbeans Dependancies (requires $java_repositories to be set)
 ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev oracle-java8-set-default'
