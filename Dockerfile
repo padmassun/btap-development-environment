@@ -93,8 +93,6 @@ RUN curl -fSL -o sqlite.tar.gz https://www.sqlite.org/2017/sqlite-autoconf-31602
     && make install \
     && make clean
 	
-
-
 #Update NodeJS and express
 RUN curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash - \
 && apt-get install -y nodejs nodejs  build-essential \
@@ -116,8 +114,6 @@ RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8
 && rm /downloads/netbeans.sh \
 && apt-get clean && $clean
 
-USER root
-
 # Install vim
 RUN apt-get update && apt-get remove --purge -y --force-yes vim  vim-gnome vim-tiny vim-common  \
 && $apt_install exuberant-ctags liblua5.1-dev luajit libluajit-5.1 python-dev ruby-dev libperl-dev git libncurses5-dev libgnome2-dev libgnomeui-dev libgtk2.0-dev libatk1.0-dev libbonoboui2-dev libcairo2-dev libx11-dev libxpm-dev libxt-dev \
@@ -138,9 +134,14 @@ RUN apt-get update && apt-get remove --purge -y --force-yes vim  vim-gnome vim-t
             --enable-fail-if-missing \
             --with-lua-prefix=/usr/include/lua5.1 \
             --enable-cscope \ 
-
 && make && make install \
 && cd ../ rm -fr vim
+
+#install Amazon AWS CLI
+RUN curl -O http://s3.amazonaws.com/ec2-downloads/ec2-api-tools.zip \
+&& mkdir /usr/local/ec2 \
+&& unzip ec2-api-tools.zip -d /usr/local/ec2 
+ENV EC2_HOME=`find  /usr/local/ec2/ec2-api-tools-* -maxdepth 0`
 
 USER  osdev
 WORKDIR /home/osdev
