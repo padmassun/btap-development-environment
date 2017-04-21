@@ -12,6 +12,7 @@
   nrcan-standards = clone https://github.com/NREL/openstudio-standards.git -b nrcan 
   nrcan-vis-pc = clone https://github.com/phylroy/parallel-coordinates.git
   nrcan-vis-sankey = clone https://github.com/phylroy/d3-sankey.git
+  phylroy-vim = clone https://github.com/phylroy/vimrc ~/.vim_runtime
   co = checkout
   ci = commit
   st = status
