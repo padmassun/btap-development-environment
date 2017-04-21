@@ -110,7 +110,7 @@ RUN apt-get update && apt-get remove --purge -y --force-yes vim  vim-gnome vim-t
 && cd ../ rm -fr vim
 
 #install Amazon AWS CLI and packer
-RUN wget https://releases.hashicorp.com/packer/1.0.0/packer_1.0.0_linux_amd64.zip
+RUN wget https://releases.hashicorp.com/packer/1.0.0/packer_1.0.0_linux_amd64.zip \
 && unzip packer_1.0.0_linux_amd64.zip -d /usr/bin/
 RUN curl -O http://s3.amazonaws.com/ec2-downloads/ec2-api-tools.zip \
 && mkdir /usr/local/ec2 \
