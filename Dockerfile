@@ -111,12 +111,14 @@ RUN apt-get update && apt-get remove --purge -y --force-yes vim  vim-gnome vim-t
 
 #install Amazon AWS CLI and packer
 RUN wget https://releases.hashicorp.com/packer/1.0.0/packer_1.0.0_linux_amd64.zip \
-&& unzip packer_1.0.0_linux_amd64.zip -d /usr/bin/
+&& unzip packer_1.0.0_linux_amd64.zip -d /usr/bin/ \
+&& rm packer_1.0.0_linux_amd64.zip
 RUN curl -O http://s3.amazonaws.com/ec2-downloads/ec2-api-tools.zip \
 && mkdir /usr/local/ec2 \
-&& unzip ec2-api-tools.zip -d /usr/local/ec2 
-#ARG EC2_HOME=`find  /usr/local/ec2/ec2-api-tools-* -maxdepth 0`
-#ENV EC2_HOME=$EC2_HOME
+&& unzip ec2-api-tools.zip -d /usr/local/ec2 \
+&& mv  `find  /usr/local/ec2/ec2-api-tools-* -maxdepth 0` /usr/local/ec2/ec2-api-tools \
+&& rm ec2-api-tools.zip  
+ENV EC2_HOME=/usr/local/ec2/ec2-api-tools
 
 
 USER  osdev
