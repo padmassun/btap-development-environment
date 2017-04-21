@@ -1,11 +1,6 @@
 # BTAP Development Environment
 
-This image, is based upon the NREL's [nrel/openstudio](https://hub.docker.com/r/nrel/openstudio/) docker container. It contains a consistent development environment that runs the latests versions of OpenStudio, E+ and PAT, as well as two IDEs that are popular at NRCan. This also allows NRCan staff to write helper scripts based on this environment. This environment will allow you to do a few things, create all the NECB archetype, run analysis on OS server cluster, generate geometery from eQuest files, add archetypes to our development and other things. 
-
- * [Visual Studio Code]()
- 	* With Ruby extentions pre-installed.
- * [NetBeans]()
- 	* With Ruby plugin ready to be installed by user. (could not automate this)  
+This image, is based upon the NREL's [nrel/openstudio](https://hub.docker.com/r/nrel/openstudio/) docker container. It contains a consistent development environment that runs the latests versions of OpenStudio and E+.This also allows NRCan staff to write helper scripts based on this environment. This environment will allow you to do a few things, create all the NECB archetype, run analysis on OS server cluster, generate geometery from eQuest files, add archetypes to our development and other things. 
 
 
 ## Requirements
@@ -59,45 +54,57 @@ You can now just start your container by your container name, in this case it is
 cd /c/Users/$(whoami)/projects/btap-development-environment && ./4-dockerfile_start_container.sh my_workspace
 ```
 # Basic Usage
-After you start the container, you should see a new terminal with a red bar over that top. This is your X terminal called 'terminator this where you can execute linux commands. There are numerous tutorials on the linux console that we will not go into here.
+After you start the container, your bash prompt should change to reflect that you are 'in' the container. To start a nice x terminal, type: 
+```bash
+terminator
+```
+This will start the terminator terminal. This is your X terminal called 'terminator this where you can execute linux commands. There are numerous tutorials on the linux console that we will not go into here.
+
 ## Windows Interop
-The container was set up to be linked to your C:\User\<your windows username> folder on windows. If you perform a directory listing "ls -l" and hit enter you should see a listing of files and folders. One of these folders is called 'windows-host' this is your shared folder to windows.  If you ls that directory, you should see your host windows user folders. The neat thing is that you can interact with that folder like it was a mounted drive.
+The container was set up to be linked to your C:\User\<your windows username> folder on windows. If you perform a directory listing "ls -l" and hit enter you should see a listing of files and folders. One of these folders is called 'windows-host' this is your shared folder to windows.  If you ls that directory, you should see your host windows user folders. The neat thing is that you can interact with that folder like it was a mounted drive. You cannot access your full windows systems the way the container is currently implemented. 
+
 ## Openstudio
 OpenStudio is installed in the image, and the default ruby implemenation is linked to OpenStudio as well, so you can run ruby scripts easiy. You may also run OpenStudio by typing the following at the command prompt. The OpenStudio version is the release version. 
 ```bash
-Openstudio &
+OpenstudioApp &
 ```
-You can run PAT also the same way
+## OpenStudio CLI
+You can run the openstudio cli by running
 ```bash
-PAT &
+openstudio
 ```
-## Netbeans
-Netbeans 8.2 has already been installed. To start Netbeans type the following
+## EnergyPlus is also available as
 ```bash
-netbeans &
+energyplus
 ```
-### Installing Ruby Support for NetBeans
-Ruby support for Netbeans allows you to develop with Ruby and OpenStudio a bit easier. It is not required, but I think it helps. The plugin in needs to be installed by hand every time you reset the container. Luckyly it only takes a few steps.
+## R 
+The R language is also installed with some common NREL plugings used for buildings. 
 
-1. Launch Netbeans and go to Tools->Plugins
-2. Click on the Downloaded tab and click 'Add Plugins'
-3. Select the "Files of Type" and select 'All Files'
-4. Navigate to your home /home/nrcan/ruby_netbeans_plugin
-5. Select all .jar and nbm files.
-6. Click okay and continue agreeing to all prompts
-7. It will ask to restart.
+## Nodejs
+Node JS is installed and npm. 
 
+## Sqlite with json support is installed. 
 
-### To-do : cloning the repositories in windows-host
-### To-do : Creating an new netbeans project using existing sources
-### To-do : Running the NECB archetypes locally
-### To-do : Running the NECB archetypes on Amazon
-### To-do : Getting OSM files from OS Server using the BTAPResults measure
-### To-do : Adding a new NECB archetypes
-### To-do : Converting OSM to JSON files
-### To-do : Add nginx and mongodb for D3 student work
-### To-do : Add equest to osm as part of the btap_utilities
+# Editors
+Originally I added Netbeans and VSCode to the image. This took too much effort to maintain and made the image large. 
 
+## nano and vim
+Nano, Vim and XEmacs have been installed by default.  If you wish to install other editors. 
+
+## Git Shortcuts for development
+To checkout copies of development and make things a bit easier (in your ~/.gitconfig file)
+  os = clone https://github.com/NREL/OpenStudio.git
+  os-standards = clone https://github.com/NREL/openstudio-standards.git
+  os-ptool =clone https://github.com/NREL/OpenStudio-PTool.git
+  os-measures = clone https://github.com/NREL/OpenStudio-measures.git
+  os-spreadsheet = https://github.com/NREL/OpenStudio-analysis-spreadsheet.git
+  nrcan-ptool = clone https://github.com/phylroy/OpenStudio-PTool.git
+  nrcan-standards = clone https://github.com/NREL/openstudio-standards.git -b nrcan 
+  nrcan-measures = clone https://github.com/NREL/OpenStudio-measures.git -b nrcan
+So to clone the nrcan-standards branch, you simply type. 
+```bash
+git nrcan-standards
+```
 #Troubleshooting
 ## You see curl failures when building image indicating certifate failures.
 This can be due to network conflicts. This has been observed on Docker for Windows v1.12.3.  One solution found was to change the mtu value to something lower in the docker host container.  You can add this by opening the Docker setting from the tray icon, going to the Docker Deamon tab and add the MTU value like below
