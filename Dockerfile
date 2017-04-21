@@ -9,20 +9,10 @@ ENV DISPLAY ${DISPLAY}
 ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils'
 
 #Basic software
-ARG software='git curl zip lynx nano unzip xterm terminator midori diffuse mongodb-org postgresql postgresql-contrib silversearcher-ag'
+ARG software='git curl zip lynx nano unzip xterm terminator midori diffuse silversearcher-ag'
 
 #Netbeans Dependancies (requires $java_repositories to be set)
 ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev oracle-java8-set-default'
-
-# R deps
-ARG r_deps='autoconf bison build-essential bzip2 ca-certificates curl imagemagick gdebi-core git libbz2-dev libcurl4-openssl-dev libgdbm3 libgdbm-dev libglib2.0-dev \
-libncurses-dev libreadline-dev libxml2-dev libxslt-dev libffi-dev libssl-dev libyaml-dev procps ruby ruby-dev tar unzip wget zip zlib1g-dev debhelper \
-fonts-cabin fonts-comfortaa fonts-droid fonts-font-awesome fonts-freefont-otf fonts-freefont-ttf fonts-gfs-artemisia fonts-gfs-complutum fonts-gfs-didot \
-fonts-gfs-neohellenic fonts-gfs-olga fonts-gfs-solomos fonts-inconsolata fonts-junicode fonts-lato fonts-linuxlibertine fonts-lobster fonts-lobstertwo fonts-oflb-asana-math \
-fonts-sil-gentium fonts-sil-gentium-basic fonts-stix gfortran gir1.2-freedesktop gir1.2-pango-1.0 libblas3 libcairo-script-interpreter2 libcairo2-dev libgs9 \
-libintl-perl libjbig-dev libjpeg-dev libkpathsea6 liblapack-dev liblzma-dev libpoppler44 libtcl8.5 libtiff5-dev libtk8.5 libxml-libxml-perl libxss1 libxt-dev \
-mpack tcl8.5 tcl8.5-dev tk8.5 tk8.5-dev ttf-adf-accanthis ttf-adf-gillius'
-
 
 #VCCode Dependancies
 ARG vscode_deps='curl libc6-dev  libasound2 libgconf-2-4 libgnome-keyring-dev libgtk2.0-0 libnss3 libpci3  libxtst6 libcanberra-gtk-module libnotify4 libxss1 wget'
@@ -46,27 +36,24 @@ ARG clean='rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /downloads/*'
 
 #Create folder for downloads
 RUN mkdir /downloads
-
-# Add ability to add ubuntu repositories required for development.
-
-# Add mongo and postgresql database software repositories.
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 \
-&& echo "deb http://repo.mongodb.org/apt/ubuntu "$(lsb_release -sc)"/mongodb-org/3.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.0.list \
-&& sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" >> /etc/apt/sources.list.d/pgdg.list' \
-&& curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add - \
-&& apt-get update \
-&& $apt_install $repository_utilities \
-&& add-apt-repository ppa:webupd8team/java -y && add-apt-repository ppa:git-core/ppa \ 
-&& apt-get update \
-&& (echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections) \
-&& apt-get update && $apt_install $software $vscode_deps $netbeans_deps $d3_deps $r_deps \
+#Install software packages
+RUN apt-get update && $apt_install $software $d3_deps $r_deps $repository_utilities \ 
 && apt-get clean && $clean
 
 #### Build R and install R packages.
+# R deps
+ARG r_deps='autoconf bison build-essential bzip2 ca-certificates curl imagemagick gdebi-core git libbz2-dev libcurl4-openssl-dev libgdbm3 libgdbm-dev libglib2.0-dev \
+libncurses-dev libreadline-dev libxml2-dev libxslt-dev libffi-dev libssl-dev libyaml-dev procps ruby ruby-dev tar unzip wget zip zlib1g-dev debhelper \
+fonts-cabin fonts-comfortaa fonts-droid fonts-font-awesome fonts-freefont-otf fonts-freefont-ttf fonts-gfs-artemisia fonts-gfs-complutum fonts-gfs-didot \
+fonts-gfs-neohellenic fonts-gfs-olga fonts-gfs-solomos fonts-inconsolata fonts-junicode fonts-lato fonts-linuxlibertine fonts-lobster fonts-lobstertwo fonts-oflb-asana-math \
+fonts-sil-gentium fonts-sil-gentium-basic fonts-stix gfortran gir1.2-freedesktop gir1.2-pango-1.0 libblas3 libcairo-script-interpreter2 libcairo2-dev libgs9 \
+libintl-perl libjbig-dev libjpeg-dev libkpathsea6 liblapack-dev liblzma-dev libpoppler44 libtcl8.5 libtiff5-dev libtk8.5 libxml-libxml-perl libxss1 libxt-dev \
+mpack tcl8.5 tcl8.5-dev tk8.5 tk8.5-dev ttf-adf-accanthis ttf-adf-gillius gfortran'
 ENV R_VERSION 3.2.3
 ENV R_MAJOR_VERSION 3
 ENV R_SHA b93b7d878138279234160f007cb9b7f81b8a72c012a15566e9ec5395cfd9b6c1
-RUN curl -fSL -o R.tar.gz "http://cran.fhcrc.org/src/base/R-$R_MAJOR_VERSION/R-$R_VERSION.tar.gz" \
+RUN apt-get update && $apt_install $r_deps \ 
+    && curl -fSL -o R.tar.gz "http://cran.fhcrc.org/src/base/R-$R_MAJOR_VERSION/R-$R_VERSION.tar.gz" \
     && echo "$R_SHA R.tar.gz" | sha256sum -c - \
     && mkdir /usr/src/R \
     && tar -xzf R.tar.gz -C /usr/src/R --strip-components=1 \
@@ -76,8 +63,8 @@ RUN curl -fSL -o R.tar.gz "http://cran.fhcrc.org/src/base/R-$R_MAJOR_VERSION/R-$
     && ./configure --enable-R-shlib \
     && make -j$(nproc) \
     && make install \
-    && make clean
-
+    && make clean \
+    && apt-get clean && $clean
 # Add in the additional R packages
 ADD config/install_packages.R install_packages.R  
 RUN Rscript install_packages.R
@@ -98,21 +85,6 @@ RUN curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash - \
 && apt-get install -y nodejs nodejs  build-essential \
 && npm install -g express-generator nodemon
 EXPOSE 3000
-
-#Install VSCode and set midori as default browser for it Also install Netbeans
-RUN set -x \
-&& curl -sSL https://go.microsoft.com/fwlink/?LinkID=760868 -o /downloads/vs.deb \
-&& ln -s /usr/bin/midori /bin/xdg-open \
-&& dpkg -i /downloads/vs.deb \
-&& rm /downloads/vs.deb \
-&& apt-get clean && $clean
-
-#Install Netbeans.
-RUN curl -sSL http://download.netbeans.org/netbeans/8.2/final/bundles/netbeans-8.2-php-linux-x64.sh -o /downloads/netbeans.sh \
-&& chmod +x /downloads/netbeans.sh \
-&& /downloads/netbeans.sh --silent \
-&& rm /downloads/netbeans.sh \
-&& apt-get clean && $clean
 
 # Install vim
 RUN apt-get update && apt-get remove --purge -y --force-yes vim  vim-gnome vim-tiny vim-common  \
@@ -141,25 +113,16 @@ RUN apt-get update && apt-get remove --purge -y --force-yes vim  vim-gnome vim-t
 RUN curl -O http://s3.amazonaws.com/ec2-downloads/ec2-api-tools.zip \
 && mkdir /usr/local/ec2 \
 && unzip ec2-api-tools.zip -d /usr/local/ec2 
-ENV EC2_HOME=`find  /usr/local/ec2/ec2-api-tools-* -maxdepth 0`
-
+#ARG EC2_HOME=`find  /usr/local/ec2/ec2-api-tools-* -maxdepth 0`
+#ENV EC2_HOME=$EC2_HOME
 USER  osdev
 WORKDIR /home/osdev
 
-#Download Ruby plugin for Netbeans (user needs to install manually on their own.) and extensions for vscode
-RUN mkdir ~/ruby_netbeans_plugin \
-&& curl -sSL http://plugins.netbeans.org/download/plugin/3696 -o ~/ruby_netbeans_plugin/ruby_netbeans.zip \
-&& unzip ~/ruby_netbeans_plugin/ruby_netbeans.zip -d ~/ruby_netbeans_plugin \
-&& rm ~/ruby_netbeans_plugin/ruby_netbeans.zip \
-&& for ext in ilich8086.launcher rebornix.Ruby ms-vscode.cpptools karyfoundation.idf robertohuertasm.vscode-icons Tyriar.sort-lines; do code --install-extension  $ext; done
-
-#Add E+ netbeans, postgres and help script to bashrc.
-RUN echo 'PATH="/usr/local/netbeans-8.2/bin:$PATH"' >> ~/.bashrc \
-&& echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
+RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
 && git clone https://github.com/canmet-energy/btap_utilities.git \
 && cd ~/btap_utilities && chmod  774 *  \
 # && /bin/bash -c "source /etc/user_config_bashrc && ./btap_gem_update_standards.sh" \
 && cd ~/btap_utilities && ./configure_user.sh
 
-ENTRYPOINT ["terminator"]
+CMD ["/bin/bash"]
 
