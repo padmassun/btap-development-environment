@@ -83,7 +83,7 @@ RUN curl -fSL -o sqlite.tar.gz https://www.sqlite.org/2017/sqlite-autoconf-31602
 #Update NodeJS and express
 RUN curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash - \
 && apt-get install -y nodejs nodejs  build-essential \
-&& npm install -g express-generator nodemon
+&& npm install -g express-generator nodemon bower
 EXPOSE 3000
 
 # Install vim
