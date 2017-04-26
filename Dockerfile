@@ -9,7 +9,7 @@ ENV DISPLAY ${DISPLAY}
 ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils'
 
 #Basic software
-ARG software='git curl zip lynx xemacs21 nano unzip xterm terminator midori diffuse silversearcher-ag'
+ARG software='git curl zip lynx xemacs21 nano unzip xterm terminator midori diffuse silversearcher-ag openssh-client'
 
 #Netbeans Dependancies (requires $java_repositories to be set)
 ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev oracle-java8-set-default'
