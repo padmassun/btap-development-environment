@@ -7,11 +7,12 @@
   os-standards = clone https://github.com/NREL/openstudio-standards.git
   os-ptool =clone https://github.com/NREL/OpenStudio-PTool.git
   os-measures = clone https://github.com/NREL/OpenStudio-measures.git
-  os-spreadsheet = https://github.com/NREL/OpenStudio-analysis-spreadsheet.git
+  os-spreadsheet = clone https://github.com/NREL/OpenStudio-analysis-spreadsheet.git
   nrcan-ptool = clone https://github.com/phylroy/OpenStudio-PTool.git
   nrcan-standards = clone https://github.com/NREL/openstudio-standards.git -b nrcan 
   nrcan-vis-pc = clone https://github.com/phylroy/parallel-coordinates.git
   nrcan-vis-sankey = clone https://github.com/phylroy/d3-sankey.git
+  necb-analysis-spreadsheet = clone https://github.com/canmet-energy/necb-analysis-spreadsheet.git
   phylroy-vim = clone https://github.com/phylroy/vimrc /home/osdev/.vim_runtime
   co = checkout
   ci = commit
