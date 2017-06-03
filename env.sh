@@ -18,6 +18,8 @@ linux_home_folder=/home/osdev
 x_display=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}')
 win_user=$(whoami)
 image=canmet/btap-development-environment
+canmet_server_folder=//s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/
 echo "Windows User: $win_user"
 echo "X server IP: $x_display"
 echo "image name: $image"
+
