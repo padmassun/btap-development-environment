@@ -15,11 +15,15 @@ else
 fi
 fi
 linux_home_folder=/home/osdev
-x_display=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}')
+host_ip=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}')
+host_name=$(ipconfig //all | grep -m 1 "Host Name" | awk '{print $NF}')
+domain=$(ipconfig //all | grep -m 1 "Primary Dns Suffix" | awk '{print $NF}')
+x_display=$host_name.$domain
 win_user=$(whoami)
 image=canmet/btap-development-environment
 canmet_server_folder=//s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/
 echo "Windows User: $win_user"
+echo "Windows Hostname: $host_name"
 echo "X server IP: $x_display"
 echo "image name: $image"
 
