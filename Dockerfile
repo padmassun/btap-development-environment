@@ -142,6 +142,6 @@ RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
 && cd ~/btap_utilities && chmod  774 *  \
 # && /bin/bash -c "source /etc/user_config_bashrc && ./btap_gem_update_standards.sh" \
 && cd ~/btap_utilities && ./configure_user.sh
-
+&& ln -s /usr/bin/midori /bin/xdg-open 
 CMD ["/bin/bash"]
 
