@@ -140,8 +140,8 @@ WORKDIR /home/osdev
 RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
 && git clone https://github.com/canmet-energy/btap_utilities.git \
 && cd ~/btap_utilities && chmod  774 *  \
-# && /bin/bash -c "source /etc/user_config_bashrc && ./btap_gem_update_standards.sh" \
-&& cd ~/btap_utilities && ./configure_user.sh
-&& ln -s /usr/bin/midori /bin/xdg-open 
+&& /bin/bash -c "source /etc/user_config_bashrc \
+&& cd ~/btap_utilities && ./configure_user.sh \
+&& ln -s /usr/bin/midori /bin/xdg-open \
 CMD ["/bin/bash"]
 
