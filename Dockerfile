@@ -137,15 +137,16 @@ ENV EC2_HOME=/usr/local/ec2/ec2-api-tools
 USER  osdev
 WORKDIR /home/osdev
 
+RUN wget https://download.jetbrains.com/ruby/RubyMine-2017.2.3.tar.gz \
+&& tar -xzf RubyMine-2017.2.3.tar.gz \
+&& rm RubyMine-2017.2.3.tar.gz
+
 RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
 && git clone https://github.com/canmet-energy/btap_utilities.git \
 && cd ~/btap_utilities && chmod  774 *  \
 && /bin/bash -c "source /etc/user_config_bashrc \
-&& cd ~/btap_utilities && ./configure_user.sh \
-&& ln -s /usr/bin/midori /bin/xdg-open
-RUN wget https://download.jetbrains.com/ruby/RubyMine-2017.2.3.tar.gz \
-&& tar -xzf RubyMine-2017.2.3.tar.gz \
-&& rm RubyMine-2017.2.3.tar.gz
+&& cd ~/btap_utilities && ./configure_user.sh 
+
 
 CMD ["/bin/bash"]
 
