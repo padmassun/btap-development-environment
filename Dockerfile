@@ -143,5 +143,9 @@ RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
 && /bin/bash -c "source /etc/user_config_bashrc \
 && cd ~/btap_utilities && ./configure_user.sh \
 && ln -s /usr/bin/midori /bin/xdg-open
+RUN wget https://download.jetbrains.com/ruby/RubyMine-2017.2.3.tar.gz \
+&& tar -xzf RubyMine-2017.2.3.tar.gz \
+&& rm RubyMine-2017.2.3.tar.gz
+
 CMD ["/bin/bash"]
 
