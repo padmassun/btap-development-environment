@@ -137,14 +137,21 @@ ENV EC2_HOME=/usr/local/ec2/ec2-api-tools
 USER  osdev
 WORKDIR /home/osdev
 
+# Install RubyMine
 RUN wget https://download.jetbrains.com/ruby/RubyMine-2017.2.3.tar.gz \
 && tar -xzf RubyMine-2017.2.3.tar.gz \
 && rm RubyMine-2017.2.3.tar.gz
 
+#create symbolic link to rubymine and set midori to default browser
+USER  root
+RUN ln -s /home/osdev/RubyMine-2017.2.3/bin/rubymine.sh /usr/local/sbin/rubymine \
+&& ln -s /usr/bin/midori /bin/xdg-open
+
+USER osdev
 RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
 && git clone https://github.com/canmet-energy/btap_utilities.git \
 && cd ~/btap_utilities && chmod  774 *  \
-&& /bin/bash -c "source /etc/user_config_bashrc \
+&& /bin/bash -c "source /etc/user_config_bashrc" \
 && cd ~/btap_utilities && ./configure_user.sh 
 
 
