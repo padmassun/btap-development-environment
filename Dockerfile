@@ -43,7 +43,7 @@ RUN apt-get update && $apt_install $software $d3_deps $r_deps $repository_utilit
 #### Build R and install R packages.
 # R deps
 ARG r_deps='autoconf bison build-essential bzip2 ca-certificates curl imagemagick gdebi-core git libbz2-dev libcurl4-openssl-dev libgdbm3 libgdbm-dev libglib2.0-dev \
-libncurses-dev libreadline-dev libxml2-dev libxslt-dev libffi-dev libssl-dev libyaml-dev procps ruby ruby-dev tar unzip wget zip zlib1g-dev debhelper \
+libncurses-dev libreadline-dev libxml2-dev libxslt-dev libffi-dev libssl-dev libyaml-dev procps tar unzip wget zip zlib1g-dev debhelper \
 fonts-cabin fonts-comfortaa fonts-droid fonts-font-awesome fonts-freefont-otf fonts-freefont-ttf fonts-gfs-artemisia fonts-gfs-complutum fonts-gfs-didot \
 fonts-gfs-neohellenic fonts-gfs-olga fonts-gfs-solomos fonts-inconsolata fonts-junicode fonts-lato fonts-linuxlibertine fonts-lobster fonts-lobstertwo fonts-oflb-asana-math \
 fonts-sil-gentium fonts-sil-gentium-basic fonts-stix gfortran gir1.2-freedesktop gir1.2-pango-1.0 libblas3 libcairo-script-interpreter2 libcairo2-dev libgs9 \
