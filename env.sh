@@ -20,7 +20,7 @@ host_name=$(ipconfig //all | grep -m 1 "Host Name" | awk '{print $NF}')
 domain=$(ipconfig //all | grep -m 1 "Primary Dns Suffix" | awk '{print $NF}')
 x_display=$host_name.$domain
 win_user=$(whoami)
-image=canmet/btap-development-environment
+image=canmet/btap-development-environment:2.2.1
 canmet_server_folder=//s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/
 echo "Windows User: $win_user"
 echo "Windows Hostname: $host_name"
