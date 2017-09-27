@@ -1,4 +1,6 @@
 #!/bin/bash
+image=canmet/btap-development-environment:2.2.1
+canmet_server_folder=//s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/
 #Check if X server is running. 
 if [ "`ps | grep Xming`" == "" ]
 then
@@ -18,12 +20,19 @@ linux_home_folder=/home/osdev
 host_ip=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}')
 host_name=$(ipconfig //all | grep -m 1 "Host Name" | awk '{print $NF}')
 domain=$(ipconfig //all | grep -m 1 "Primary Dns Suffix" | awk '{print $NF}')
-x_display=$host_name.$domain
+if [ $domain == ":" ]
+then
+    echo "Domain could not be determined. Using IP address $host_ip instead."
+	x_display=$host_ip
+else
+	x_display=$host_name.$domain
+	echo "Host and Domain found to be: $x_display"
+fi
 win_user=$(whoami)
-image=canmet/btap-development-environment:2.2.1
-canmet_server_folder=//s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/
 echo "Windows User: $win_user"
+echo "host_ip: $host_ip"
 echo "Windows Hostname: $host_name"
+echo "windows domain name: $domain"
 echo "X server IP: $x_display"
 echo "image name: $image"
 
