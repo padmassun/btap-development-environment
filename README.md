@@ -66,7 +66,7 @@ The container was set up to be linked to your C:\User\<your windows username> fo
 ## Openstudio
 OpenStudio is installed in the image, and the default ruby implemenation is linked to OpenStudio as well, so you can run ruby scripts easiy. You may also run OpenStudio by typing the following at the command prompt. The OpenStudio version is the release version. 
 ```bash
-OpenstudioApp &
+OpenStudioApp &
 ```
 ## OpenStudio CLI
 You can run the openstudio cli by running
