@@ -1,6 +1,11 @@
 #!/bin/bash
 source ./env.sh
-echo Windows users $win_user was detected.
-echo using  X server at this IP $x_display:0.0 .
-echo start $1
+if [ $machine == "MinGw" ]
+then
+	echo using  windows X server at this IP $x_display:
+	echo starting $1
+elif [ $machine == "Linux" ]
+then
+	echo using  linux/macos X server at this IP $x_display
+fi
 docker start  -i  $1

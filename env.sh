@@ -36,11 +36,13 @@ if [ $machine == "MinGw" ]
 	if [ $domain == ":" ]
 	then
 		echo "Domain could not be determined. Using IP address $host_ip instead."
-		x_display=$host_ip
+		x_display=$host_ip:0
 	else
-		x_display=$host_name.$domain
+		x_display=$host_name.$domain:0
 		echo "Host and Domain found to be: $x_display"
 	fi
+	#set your DISPLAY to what it should be
+	export DISPLAY=$x_display
 elif [ $machine == "Linux" ]
 	then
 	if [[ -z "${DISPLAY}" ]] 
