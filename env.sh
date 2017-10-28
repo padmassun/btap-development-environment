@@ -54,7 +54,15 @@ elif [ $machine == "Linux" ]
 fi
 linux_home_folder=/home/osdev
 
-win_user=$(whoami)
+if [ "`whoami | grep +`" == "" ]
+then
+    win_user=$(whoami)
+else
+    # Specific case for Jeff's machine (whoami = W-BSC-A107313+jeffblake)!
+	win_user=jeffblake
+    x_display=192.168.0.2
+fi
+
 echo "Windows User: $win_user"
 echo "host_ip: $host_ip"
 echo "Windows Hostname: $host_name"
