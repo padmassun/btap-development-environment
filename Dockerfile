@@ -1,4 +1,4 @@
-FROM canmet/docker-openstudio:2.2.1
+FROM canmet/docker-openstudio:2.4.1
 
 MAINTAINER Phylroy Lopez phylroy.lopez@canada.ca
 
