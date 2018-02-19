@@ -52,6 +52,11 @@ elif [ $machine == "Linux" ]
 	else
 		x_display=$DISPLAY
 	fi
+	if [ -n "$SSH_CLIENT" ]
+	then
+		echo found logging in through ssh. Will need to pass SSH client IP instead. 
+		x_display=$(echo $SSH_CLIENT | awk '{ print $1}'):0
+	fi
 fi
 linux_home_folder=/home/osdev
 
@@ -71,4 +76,5 @@ echo "Windows Hostname: $host_name"
 echo "windows domain name: $domain"
 echo "X server IP: $x_display"
 echo "image name: $image"
+
 
