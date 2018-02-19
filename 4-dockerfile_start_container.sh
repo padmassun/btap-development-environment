@@ -2,7 +2,7 @@
 source ./env.sh
 if [ $machine == "MinGw" ]
 then
-	echo using  windows X server at this IP $x_display:
+	echo using  windows X server at this IP $x_display
 	echo starting $1
 elif [ $machine == "Linux" ]
 then

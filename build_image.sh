@@ -6,6 +6,6 @@ if test -d //s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/ ;
 then
     echo "Found Canmet folder."
     echo "Saving Image to Canmet folder $canmet_server_folder"
-	docker save -o //s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/btap-DE.img $image
+	docker save -o //s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/BTAP-DE_$os_version.img $image
 fi
 
