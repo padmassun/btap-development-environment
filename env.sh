@@ -60,7 +60,8 @@ then
 else
     # Specific case for Jeff's machine (whoami = W-BSC-A107313+jeffblake)!
 	win_user=jeffblake
-    x_display=192.168.0.2
+    x_display=$(ipconfig | grep -m 3 "IPv4" | tail -1 | awk '{print $NF}')
+	export DISPLAY=$x_display
 fi
 
 echo "Windows User: $win_user"
