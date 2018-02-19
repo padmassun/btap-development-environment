@@ -1,5 +1,6 @@
 #!/bin/bash
-image=canmet/btap-development-environment:2.4.1
+os_version=2.4.1
+image=canmet/btap-development-environment:$os_version
 canmet_server_folder=//s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/
 
 unameOut="$(uname -s)"
@@ -36,9 +37,9 @@ if [ $machine == "MinGw" ]
 	if [ $domain == ":" ]
 	then
 		echo "Domain could not be determined. Using IP address $host_ip instead."
-		x_display=$host_ip:0
+		x_display=$host_ip:0.0
 	else
-		x_display=$host_name.$domain:0
+		x_display=$host_name.$domain:0.0
 		echo "Host and Domain found to be: $x_display"
 	fi
 	#set your DISPLAY to what it should be
@@ -61,7 +62,7 @@ else
     # Specific case for Jeff's machine (whoami = W-BSC-A107313+jeffblake)!
 	win_user=jeffblake
     x_display=$(ipconfig | grep -m 3 "IPv4" | tail -1 | awk '{print $NF}')
-	export DISPLAY=$x_display
+	export DISPLAY=$x_display:0.0
 fi
 
 echo "Windows User: $win_user"
