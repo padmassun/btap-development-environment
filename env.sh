@@ -1,5 +1,5 @@
 #!/bin/bash
-image=canmet/btap-development-environment:2.2.1
+image=canmet/btap-development-environment:2.4.1
 canmet_server_folder=//s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/
 
 unameOut="$(uname -s)"
