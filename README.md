@@ -33,9 +33,9 @@ cd /c/Users/$(whoami)/projects/btap-development-environment && ./1_rm_images_and
 ```
 
 ## Step 2 Create The Docker BTAP-DE Image
-This will create the Docker Image used for development.  This may take a long time to build. At BCC this may take up to 4 hours, so you may wish to use the alternative for CanmetEnergy Staff.  Be patient as this will take a long time. 
+This will create the Docker Image used for development.  This may take a long time to pull. At BCC this may take up to 4 hours, so you may wish to use the alternative for CanmetEnergy Staff.  Be patient as this will take a long time. 
 ```bash
-cd /c/Users/$(whoami)/projects/btap-development-environment && ./2-dockerfile_build_image.sh
+cd /c/Users/$(whoami)/projects/btap-development-environment && ./2-dockerfile_pull_image.sh
 ```
 
 ## Step 2 Alternative: Fast Method for CANMET Staff
