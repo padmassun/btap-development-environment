@@ -57,7 +57,7 @@ cd /c/Users/$(whoami)/projects/btap-development-environment && ./4-dockerfile_st
 After you start the container, your bash prompt should change to reflect that you are 'in' the container. To start a nice x terminal, type: 
 ```bash
 terminator
-```
+ic```
 This will start the terminator terminal. This is your X terminal called 'terminator this where you can execute linux commands. There are numerous tutorials on the linux console that we will not go into here.
 
 ## Windows Interop
@@ -106,7 +106,7 @@ So to clone the nrcan-standards branch, you simply type.
 git nrcan-standards
 ```
 #Troubleshooting
-## You see curl failures when building image indicating certifate failures.
+## You see curl failures when building image indicating network certificate failures.
 This can be due to network conflicts. This has been observed on Docker for Windows v1.12.3.  One solution found was to change the mtu value to something lower in the docker host container.  You can add this by opening the Docker setting from the tray icon, going to the Docker Deamon tab and add the MTU value like below
 ```json
 {
