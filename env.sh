@@ -31,7 +31,7 @@ if [ $machine == "MinGw" ]
 			exit
 		fi
 	fi
-	host_ip=$(ipconfig | grep -m 1 "IPv4" | awk '{print $NF}')
+	host_ip=$(wmic NICCONFIG WHERE DHCPEnabled=true Get IPAddress | gawk 'match($0,  /^{"(.*)",.*"}/, a) { print a[1] }' |  sed -n 1p)
 	host_name=$(ipconfig //all | grep -m 1 "Host Name" | awk '{print $NF}')
 	domain=$(ipconfig //all | grep -m 1 "Primary Dns Suffix" | awk '{print $NF}')
 	if [ $domain == ":" ]
