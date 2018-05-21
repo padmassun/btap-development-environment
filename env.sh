@@ -2,6 +2,7 @@
 os_version=2.4.1
 image=canmet/btap-development-environment:$os_version
 canmet_server_folder=//s-bcc-nas2/Groups/Common\ Projects/HB/dockerhub_images/
+x_folder=nothing
 
 unameOut="$(uname -s)"
 case "${unameOut}" in
@@ -15,33 +16,55 @@ echo ${machine}
 
 
 if [ $machine == "MinGw" ]
+then
+	if [ -d "/c/Program Files/Xming/" ]
 	then
+		x_folder='/c/Program Files/Xming/'
+	elif [ -d "/c/Program Files\ (x86)/Xming/" ]
+	then
+		x_folder="/c/Program Files (x86)/Xming/"
+	else
+		echo "Could not find Xming installed on your system either /c/Program Files/Xming or /c/Program Files (x86)/Xming  . Please install Xming, ideally the donation version in the default location." 
+		exit
+	fi
+	
 	#Check if X server is running. 
 	if [ "`ps | grep Xming`" == "" ]
 	then
-		#If not running try to start it. 
-		if [ -d "/c/Program Files/Xming/" ]
-		then
-			/c/Program\ Files/Xming/Xming.exe -ac -multiwindow -clipboard  -dpi 108 &
-		elif [ -d "/c/Program Files (x86)/Xming/" ]
-		then
-			/c/Program\ Files\ \(x86\)/Xming/Xming.exe -ac -multiwindow -clipboard  -dpi 108 &
-		else
-			echo "Could not find Xming installed on your system either /c/Program Files/Xming or /c/Program Files (x86)/Xming  . Please install Xming, ideally the donation version in the default location." 
-			exit
-		fi
+		"${x_folder}"Xming.exe -ac -multiwindow -clipboard  -dpi 108 &
 	fi
-	host_ip=$(wmic NICCONFIG WHERE DHCPEnabled=true Get IPAddress | gawk 'match($0,  /^{"(.*)",.*"}/, a) { print a[1] }' |  sed -n 1p)
+	#find candidate Ip addresses for X server. 
 	host_name=$(ipconfig //all | grep -m 1 "Host Name" | awk '{print $NF}')
 	domain=$(ipconfig //all | grep -m 1 "Primary Dns Suffix" | awk '{print $NF}')
-	if [ $domain == ":" ]
+	host_name_domain=$host_name.$domain:0.0
+	host_ip_1=$(wmic NICCONFIG WHERE DHCPEnabled=true Get IPAddress | gawk 'match($0,  /^{"(.*)",.*"}/, a) { print a[1] }' |  sed -n 1p):0.0
+	host_ip_2=$(wmic NICCONFIG WHERE DHCPEnabled=true Get IPAddress | gawk 'match($0,  /^{"(.*)",.*"}/, a) { print a[1] }' |  sed -n 2p):0.0
+	DISPLAY=$host_name_domain "${x_folder}"xset.exe q
+	if [ $? -eq 0 ]
 	then
-		echo "Domain could not be determined. Using IP address $host_ip instead."
-		x_display=$host_ip:0.0
+		echo "Found Suitable IP address for Xserver and Docker $host_name_domain"
+		x_display=$host_name_domain
 	else
-		x_display=$host_name.$domain:0.0
-		echo "Host and Domain found to be: $x_display"
+		DISPLAY=$host_ip_1 "${x_folder}"xset.exe q
+		if [ $? -eq 0 ]
+		then
+			echo "Found Suitable IP address for Xserver and Docker $host_ip_1"
+			x_display=$host_ip_1
+		else
+			DISPLAY=$host_ip_2 "${x_folder}"xset.exe q
+			if [ $? -eq 0 ]
+			then
+				echo "Found Suitable IP address for Xserver and Docker $host_ip_2"
+				x_display=$host_ip_2
+			fi
+		fi
 	fi
+	if [ -z "$x_display" ] 
+	then 
+		echo "Could not determine suitable Xserver...X will not be availble for the container on this system."
+	fi
+	
+
 	#set your DISPLAY to what it should be
 	export DISPLAY=$x_display
 elif [ $machine == "Linux" ]
