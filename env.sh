@@ -20,7 +20,7 @@ then
 	if [ -d "/c/Program Files/Xming/" ]
 	then
 		x_folder='/c/Program Files/Xming/'
-	elif [ -d "/c/Program Files\ (x86)/Xming/" ]
+	elif [ -d "/c/Program Files (x86)/Xming/" ]
 	then
 		x_folder="/c/Program Files (x86)/Xming/"
 	else
