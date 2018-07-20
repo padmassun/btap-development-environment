@@ -57,11 +57,11 @@ cd /c/Users/$(whoami)/projects/btap-development-environment && ./4-dockerfile_st
 After you start the container, your bash prompt should change to reflect that you are 'in' the container. To start a nice x terminal, type: 
 ```bash
 terminator
-ic```
+```
 This will start the terminator terminal. This is your X terminal called 'terminator this where you can execute linux commands. There are numerous tutorials on the linux console that we will not go into here.
 
 ## Windows Interop
-The container was set up to be linked to your C:\User\<your windows username> folder on windows. If you perform a directory listing "ls -l" and hit enter you should see a listing of files and folders. One of these folders is called 'windows-host' this is your shared folder to windows.  If you ls that directory, you should see your host windows user folders. The neat thing is that you can interact with that folder like it was a mounted drive. You cannot access your full windows systems the way the container is currently implemented. 
+The container was set up to be linked to your C:\Users\<your windows username> folder on windows. If you perform a directory listing "ls -l" and hit enter you should see a listing of files and folders. One of these folders is called 'windows-host' this is your shared folder to windows.  If you ls that directory, you should see your host windows user folders. The neat thing is that you can interact with that folder like it was a mounted drive. You cannot access your full windows systems the way the container is currently implemented. 
 
 ## Openstudio
 OpenStudio is installed in the image, and the default ruby implemenation is linked to OpenStudio as well, so you can run ruby scripts easiy. You may also run OpenStudio by typing the following at the command prompt. The OpenStudio version is the release version. 
