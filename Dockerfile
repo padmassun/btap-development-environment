@@ -98,10 +98,9 @@ ARG ruby_mine_version='RubyMine-2018.2.1'
 RUN wget https://download.jetbrains.com/ruby/$ruby_mine_version.tar.gz \
 && tar -xzf $ruby_mine_version.tar.gz \
 && rm $ruby_mine_version.tar.gz
-
 #create symbolic link to rubymine and set midori to default browser
 USER  root
-RUN ln -s /home/osdev/RubyMine-2017.2.3/bin/rubymine.sh /usr/local/sbin/rubymine \
+RUN ln -s /home/osdev/$ruby_mine_version/bin/rubymine.sh /usr/local/sbin/rubymine \
 && ln -s /usr/bin/midori /bin/xdg-open
 
 USER osdev
