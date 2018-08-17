@@ -1,0 +1,366 @@
+#!/home/nrcan/.rbenv/shims/ruby
+require 'base64'
+require 'csv'
+require 'fileutils'
+require 'optparse'
+require 'yaml'
+require 'openstudio'
+require 'openstudio-standards'
+require 'parallel'
+
+options = {}
+
+
+Weather_files = [
+    'CAN_BC_Vancouver.718920_CWEC.epw',
+    'CAN_BC_Victoria.717990_CWEC.epw',
+    'CAN_BC_Abbotsford.711080_CWEC.epw',
+    'CAN_BC_Comox.718930_CWEC.epw',
+    'CAN_BC_Summerland.717680_CWEC.epw',
+    'CAN_ON_Windsor.715380_CWEC.epw',
+    'CAN_BC_Kamloops.718870_CWEC.epw',
+    'CAN_BC_Sandspit.711010_CWEC.epw',
+    'CAN_BC_Port.Hardy.711090_CWEC.epw',
+    'CAN_NS_Sable.Island.716000_CWEC.epw',
+    'CAN_ON_Simcoe.715270_CWEC.epw',
+    'CAN_ON_Toronto.716240_CWEC.epw',
+    'CAN_ON_London.716230_CWEC.epw',
+    'CAN_NS_Greenwood.713970_CWEC.epw',
+    'CAN_BC_Prince.Rupert.718980_CWEC.epw',
+    'CAN_ON_Trenton.716210_CWEC.epw',
+    'CAN_NS_Shearwater.716010_CWEC.epw',
+    'CAN_ON_Kingston.716200_CWEC.epw',
+    'CAN_AB_Lethbridge.712430_CWEC.epw',
+    'CAN_PQ_Montreal.Intl.AP.716270_CWEC.epw',
+    'CAN_NS_Truro.713980_CWEC.epw',
+    'CAN_PQ_St.Hubert.713710_CWEC.epw',
+    'CAN_ON_Mount.Forest.716310_CWEC.epw',
+    'CAN_PQ_Montreal.Jean.Brebeuf.716278_CWEC.epw',
+    'CAN_NS_Sydney.717070_CWEC.epw',
+    'CAN_BC_Cranbrook.718800_CWEC.epw',
+    'CAN_PE_Charlottetown.717060_CWEC.epw',
+    'CAN_ON_Ottawa.716280_CWEC.epw',
+    'CAN_AB_Medicine.Hat.718720_CWEC.epw',
+    'CAN_NB_Saint.John.716090_CWEC.epw',
+    'CAN_NF_Stephenville.718150_CWEC.epw',
+    'CAN_NB_Fredericton.717000_CWEC.epw',
+    'CAN_ON_Muskoka.716300_CWEC.epw',
+    'CAN_PQ_Montreal.Mirabel.716278_CWEC.epw',
+    'CAN_NF_St.Johns.718010_CWEC.epw',
+    'CAN_NB_Miramichi.717440_CWEC.epw',
+    'CAN_PQ_Grindstone.Island_CWEC.epw',
+    'CAN_PQ_Quebec.717140_CWEC.epw',
+    'CAN_ON_Sault.Ste.Marie.712600_CWEC.epw',
+    'CAN_PQ_Sherbrooke.716100_CWEC.epw',
+    'CAN_BC_Prince.George.718960_CWEC.epw',
+    'CAN_NF_Gander.718030_CWEC.epw',
+    'CAN_AB_Calgary.718770_CWEC.epw',
+    'CAN_SK_Swift.Current.718700_CWEC.epw',
+    'CAN_BC_Smithers.719500_CWEC.epw',
+    'CAN_ON_North.Bay.717310_CWEC.epw',
+    'CAN_PQ_Ste.Agathe.des.Monts.717200_CWEC.epw',
+    'CAN_SK_Estevan.718620_CWEC.epw',
+    'CAN_PQ_Riviere.du.Loup.717150_CWEC.epw',
+    'CAN_PQ_Mont.Joli.717180_CWEC.epw',
+    'CAN_AB_Edmonton.711230_CWEC.epw',
+    'CAN_ON_Thunder.Bay.717490_CWEC.epw',
+    'CAN_SK_Regina.718630_CWEC.epw',
+    'CAN_MB_Winnipeg.718520_CWEC.epw',
+    'CAN_PQ_Roberval.717280_CWEC.epw',
+    'CAN_PQ_Bagotville.717270_CWEC.epw',
+    'CAN_SK_Saskatoon.718660_CWEC.epw',
+    'CAN_BC_Fort.St.John.719430_CWEC.epw',
+    'CAN_PQ_Baie.Comeau.711870_CWEC.epw',
+    'CAN_AB_Grande.Prairie.719400_CWEC.epw',
+    'CAN_MB_Brandon.711400_CWEC.epw',
+    'CAN_ON_Timmins.717390_CWEC.epw',
+    'CAN_SK_North.Battleford.718760_CWEC.epw',
+    'CAN_PQ_Val.d.Or.717250_CWEC.epw',
+    'CAN_PQ_Sept-Iles.718110_CWEC.epw',
+    'CAN_AB_Fort.McMurray.719320_CWEC.epw',
+    'CAN_MB_The.Pas.718670_CWEC.epw',
+    'CAN_NF_Battle.Harbour.718170_CWEC.epw',
+    'CAN_NF_Goose.718160_CWEC.epw',
+    'CAN_YT_Whitehorse.719640_CWEC.epw',
+    'CAN_PQ_Lake.Eon.714210_CWEC.epw',
+    'CAN_PQ_La.Grande.Riviere.718270_CWEC.epw',
+    'CAN_PQ_Nitchequon.CAN270_CWEC.epw',
+    'CAN_PQ_Kuujjuarapik.719050_CWEC.epw',
+    'CAN_PQ_Schefferville.718280_CWEC.epw',
+    'CAN_PQ_Kuujuaq.719060_CWEC.epw',
+    'CAN_MB_Churchill.719130_CWEC.epw',
+    'CAN_NT_Inuvik.719570_CWEC.epw',
+    'CAN_NU_Resolute.719240_CWEC.epw']
+
+
+    Buildings = [
+    'FullServiceRestaurant',
+    'HighriseApartment',
+    'LargeHotel',
+    'LargeOffice',
+    'MediumOffice',
+    'MidriseApartment',
+    'Outpatient',
+    'PrimarySchool',
+    'QuickServiceRestaurant',
+    'RetailStandAlone',
+    'RetailStripMall',
+    'SecondarySchool',
+    'SmallHotel',
+    'SmallOffice',
+    'RetailStripmall', 
+    'Warehouse'
+    ]
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: btap_archetypes -b ListofBuildings -e ListofEPWs 
+  This will output the model files to ./output. It will overwrite any 
+  files in this folder if it exists. For large simulations, please use 
+  OpenStudio Spreadsheet or PAT 2.0. 
+  Examples: 
+  *Run a single building against a single weather file. 
+  btap_necb2011_arch -b 'SmallHotel' -e 'CAN_BC_Vancouver.718920_CWEC.epw'
+
+  *Run two buildings against two weather files (4 simulations) 
+  btap_necb2011_arch -b 'SmallHotel','PrimarySchool' -e 'CAN_BC_Vancouver.718920_CWEC.epw','CAN_AB_Edmonton.711230_CWEC.epw' 
+
+  *Run all buildings against a weather files 
+  btap_necb2011_arch -b 'All' -e 'CAN_BC_Vancouver.718920_CWEC.epw'
+
+  *Create all buildings against all weather files. but don't simulate
+  btap_necb2011_arch.rb -b 'All' -e 'All' -d
+
+
+  
+  *Show list of buildings available
+  btap_necb2011_arch -l
+  
+  *Show list of buildings available
+  btap_necb2011_arch -w
+  "
+  opts.on("-b", "--building_type a,b,c", Array, "Array of building_types") { |a| options[:building_types] = a.map { |v| v.to_s } }
+  opts.on("-e", "--epw_files a,b,c", Array, "Array of epw_files") { |a| options[:epw_files] = a.map { |v| v.to_s } }
+  opts.on('-l', '--show_building_list', 'Lists available buildings') { |v| options[:show_buildings] = v }
+  opts.on('-w', '--show_weather_list', 'Lists available epwweather') { |v| options[:show_epw] = v }
+  opts.on('-d', '--do_not_simulate', 'skip simulation of model') { |v| options[:dont_sim] = v }
+
+end.parse!
+
+
+
+if not options[:show_buildings].nil?
+puts "*list of buildings*"
+puts Buildings
+exit
+end
+
+if not options[:show_epw].nil?
+puts "*list of weather*"
+puts Weather_files
+exit
+end
+
+
+
+
+
+
+ #Add a "dig" method to Hash to check if deeply nested elements exist
+ #From: http://stackoverflow.com/questions/1820451/ruby-style-how-to-check-whether-a-nested-hash-element-exists
+class Hash
+  def dig(*path)
+    path.inject(self) do |location, key|
+      location.respond_to?(:keys) ? location[key] : nil
+    end
+  end
+end
+
+ #Create a base class for testing doe prototype buildings
+class CmdCreateDOEPrototypeBuilding
+
+  def initialize
+      cur_dir = Dir.pwd 
+     #Make a directory to save the resulting models
+    @test_dir = "#{cur_dir}/output"
+    if !Dir.exist?(@test_dir)
+      Dir.mkdir(@test_dir)
+      puts "Created folder #{@test_dir}"
+    end
+     #Make a file to store the model comparisons
+    @results_csv_file = "#{cur_dir}/output/prototype_buildings_results.csv"
+     #Add a header row on file creation
+    if !File.exist?(@results_csv_file)
+      File.open(@results_csv_file, 'a') do |file|
+        file.puts "building_type,template,climate_zone,fuel_type,end_use,legacy_val,osm_val,percent_error,difference,absolute_percent_error"
+      end
+    end
+     #Make a file that combines all the run logs
+    @combined_results_log = "#{cur_dir}/output/prototype_buildings_run.log"
+    if !File.exist?(@combined_results_log)
+      File.open(@combined_results_log, 'a') do |file|
+        file.puts "Started @ #{Time.new}"
+      end
+    end    
+    
+  end
+
+   #Dynamically create a test for each building type/template/climate zone
+   #so that if one combo fails the others still run
+  def create_run_model(building_types, 
+      templates, 
+      climate_zones, 
+      epw_files,
+      create_models = true,
+      run_models = true,
+      compare_results = true,
+      debug = false)
+
+    sim_array = []
+    building_types.each do |building_type|
+      templates.each do |template|
+        climate_zones.each do |climate_zone|
+            epw_files.each do |epw_file|
+              sim = []
+              sim << building_type <<  template << climate_zone << epw_file
+              sim_array << sim
+            end 
+        end
+      end
+    end  
+    Parallel.each(sim_array) do |sim|
+    building_type,   template,  climate_zone, epw_file = sim 
+    create_building(building_type, template, climate_zone, epw_file, create_models, run_models, compare_results, debug )
+    end
+  end
+  
+  def create_building(building_type, 
+      template, 
+      climate_zone, 
+      epw_file,
+      create_models,
+      run_models,
+      _compare_results,
+      debug )
+    
+    case template
+    when 'NECB 2011'
+      method_name = "test_#{building_type}-#{template}-#{climate_zone}-#{epw_file}".gsub(' ','_').gsub('.','_')
+    end
+    
+
+
+            
+       #Start time
+      start_time = Time.new
+            
+       #Reset the log for this test
+      reset_log
+            
+       #Paths for this test run
+      
+    case template
+    when 'NECB 2011'
+      model_name = "test_#{building_type}-#{template}-#{climate_zone}-#{epw_file}"
+    end
+      
+      
+      run_dir = "#{@test_dir}/#{model_name}"
+      if !Dir.exist?(run_dir)
+        Dir.mkdir(run_dir)
+      end
+      full_sim_dir = "#{run_dir}/AnnualRun"
+      idf_path_string = "#{run_dir}/#{model_name}.idf"
+      idf_path = OpenStudio::Path.new(idf_path_string)            
+      osm_path_string = "#{run_dir}/final.osm"
+      output_path = OpenStudio::Path.new(run_dir)
+            
+      model = nil
+            
+       #Create the model, if requested
+      if create_models  
+        model = OpenStudio::Model::Model.new
+        model.create_prototype_building(building_type,template,climate_zone,epw_file,run_dir)  
+        output_variable_array =
+          [
+          "Facility Total Electric Demand Power",
+          "Water Heater Gas Rate",
+          "Plant Supply Side Heating Demand Rate",
+          "Heating Coil Gas Rate",
+          "Cooling Coil Electric Power",
+          "Boiler Gas Rate",
+          "Heating Coil Air Heating Rate",
+          "Heating Coil Electric Power",
+          "Cooling Coil Total Cooling Rate",
+          "Water Heater Heating Rate",
+          "Zone Air Temperature",
+          "Water Heater Electric Power",
+          "Chiller Electric Power",
+          "Chiller Electric Energy",
+          "Cooling Tower Heat Transfer Rate",
+          "Cooling Tower Fan Electric Power",
+          "Cooling Tower Fan Electric Energy"
+        ]
+        BTAP::Reports::set_output_variables(model,"Hourly", output_variable_array)
+              
+         #Convert the model to energyplus idf
+        forward_translator = OpenStudio::EnergyPlus::ForwardTranslator.new
+        idf = forward_translator.translateModel(model)
+        idf.save(idf_path,true)  
+            
+      end
+         
+       #TO DO: call add_output routine (btap)
+            
+            
+            
+       #Run the simulation, if requested
+      if run_models
+
+         #Delete previous run directories if they exist
+        FileUtils.rm_rf(full_sim_dir)
+            
+         #Load the model from disk if not already in memory
+        if model.nil?
+          model = safe_load_model(osm_path_string)
+          forward_translator = OpenStudio::EnergyPlus::ForwardTranslator.new
+          idf = forward_translator.translateModel(model)
+          idf.save(idf_path,true)
+        end
+         #Run the annual simulation
+        model.run_simulation_and_log_errors(full_sim_dir)
+      end           
+            
+                      
+
+       #Calculate run time
+      run_time = Time.new - start_time
+            
+       #Report out errors
+      log_file_path = "#{run_dir}/openstudio-standards.log"
+      messages = log_messages_to_file(log_file_path, debug)
+      errors = get_logs(OpenStudio::Error)         
+            
+       #Copy errors to combined log file
+      File.open(@combined_results_log, 'a') do |file|
+        file.puts "*** #{model_name}, Time: {run_time.round} sec ***"
+        messages.each do |message|
+          file.puts message
+        end
+      end    
+  end
+end
+
+cmd = CmdCreateDOEPrototypeBuilding.new
+building_types = options[:building_types]
+epw_files = options[:epw_files]
+epw_files = Weather_files if epw_files.first.downcase == 'all'
+building_types = Buildings if building_types.first.downcase == 'all'
+
+cmd.create_run_model(building_types, 
+      ['NECB 2011'], 
+      ['NECB HDD Method'], 
+      epw_files,
+      create_models = true,
+      options[:dont_sim].nil?,
+      compare_results = true,
+      debug = false)
