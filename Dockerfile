@@ -99,17 +99,15 @@ RUN wget https://download.jetbrains.com/ruby/$ruby_mine_version.tar.gz \
 && tar -xzf $ruby_mine_version.tar.gz \
 && rm $ruby_mine_version.tar.gz
 #create symbolic link to rubymine and set midori to default browser
+
 USER  root
 RUN ln -s /home/osdev/$ruby_mine_version/bin/rubymine.sh /usr/local/sbin/rubymine \
 && ln -s /usr/bin/midori /bin/xdg-open
-
-USER osdev
+ADD btap_utilities /home/osdev/btap_utilities
+RUN cd /home/osdev/btap_utilities && chmod  774 * 
+USER  osdev
 RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
-&& git clone https://github.com/canmet-energy/btap_utilities.git \
-&& cd ~/btap_utilities && chmod  774 *  \
-&& /bin/bash -c "source /etc/user_config_bashrc" \
-&& cd ~/btap_utilities && ./configure_user.sh 
-
+&& /bin/bash -c "source /etc/user_config_bashrc" 
 
 CMD ["/bin/bash"]
 
