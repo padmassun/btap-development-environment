@@ -1,4 +1,4 @@
-FROM canmet/docker-openstudio:latest
+FROM canmet/docker-openstudio:2.6.0
 
 MAINTAINER Phylroy Lopez phylroy.lopez@canada.ca
 
@@ -103,11 +103,11 @@ RUN wget https://download.jetbrains.com/ruby/$ruby_mine_version.tar.gz \
 USER  root
 RUN ln -s /home/osdev/$ruby_mine_version/bin/rubymine.sh /usr/local/sbin/rubymine \
 && ln -s /usr/bin/midori /bin/xdg-open
-ADD btap_utilities /home/osdev/btap_utilities
-RUN cd /home/osdev/btap_utilities && chmod  774 * 
+
 USER  osdev
+ADD --chown=osdev:osdev btap_utilities /home/osdev/btap_utilities
+ADD --chown=osdev:osdev config/terminator/config /home/osdev/.config/terminator/config
+ADD --chown=osdev:osdev config/.gitconfig /home/osdev/.gitconfig
 RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
-&& /bin/bash -c "source /etc/user_config_bashrc" 
-
+&& /bin/bash -c "source /etc/user_config_bashrc"
 CMD ["/bin/bash"]
-
