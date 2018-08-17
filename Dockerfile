@@ -98,19 +98,16 @@ ARG ruby_mine_version='RubyMine-2018.2.1'
 RUN wget https://download.jetbrains.com/ruby/$ruby_mine_version.tar.gz \
 && tar -xzf $ruby_mine_version.tar.gz \
 && rm $ruby_mine_version.tar.gz
-
 #create symbolic link to rubymine and set midori to default browser
+
 USER  root
-RUN ln -s /home/osdev/RubyMine-2017.2.3/bin/rubymine.sh /usr/local/sbin/rubymine \
+RUN ln -s /home/osdev/$ruby_mine_version/bin/rubymine.sh /usr/local/sbin/rubymine \
 && ln -s /usr/bin/midori /bin/xdg-open
 
-USER osdev
+USER  osdev
+ADD --chown=osdev:osdev btap_utilities /home/osdev/btap_utilities
+ADD --chown=osdev:osdev config/terminator/config /home/osdev/.config/terminator/config
+ADD --chown=osdev:osdev config/.gitconfig /home/osdev/.gitconfig
 RUN echo 'PATH="~/btap_utilities:$PATH"' >> ~/.bashrc \
-&& git clone https://github.com/canmet-energy/btap_utilities.git \
-&& cd ~/btap_utilities && chmod  774 *  \
-&& /bin/bash -c "source /etc/user_config_bashrc" \
-&& cd ~/btap_utilities && ./configure_user.sh 
-
-
+&& /bin/bash -c "source /etc/user_config_bashrc"
 CMD ["/bin/bash"]
-
