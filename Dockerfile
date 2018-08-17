@@ -6,10 +6,10 @@ ARG DISPLAY=local
 ENV DISPLAY ${DISPLAY}
 
 #Repository utilities add on list.
-ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils'
+ARG repository_utilities='ca-certificates software-properties-common python-software-properties dpkg-dev debconf-utils software-properties-common python-software-properties'
 
 #Basic software
-ARG software='git vim curl zip lynx xemacs21 nano unzip xterm terminator midori diffuse silversearcher-ag openssh-client'
+ARG software='git vim curl zip lynx xemacs21 nano unzip xterm terminator midori diffuse silversearcher-ag openssh-client openssh-server sqlitebrowser'
 
 #Netbeans Dependancies (requires $java_repositories to be set)
 ARG netbeans_deps='oracle-java8-installer libxext-dev libxrender-dev libxtst-dev oracle-java8-set-default'
@@ -36,9 +36,13 @@ ARG clean='rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /downloads/*'
 
 #Create folder for downloads
 RUN mkdir /downloads
+
 #Install software packages
-RUN apt-get update && $apt_install $software $d3_deps $r_deps $repository_utilities \ 
-&& apt-get clean && $clean
+RUN apt-get update && \ 
+	$apt_install $repository_utilities \
+	&& sudo add-apt-repository -y ppa:linuxgndu/sqlitebrowser \
+	&& apt-get update && $apt_install $software $d3_deps $r_deps \ 
+	&& apt-get clean && $clean
 
 
 #### Build sqlite with json support
@@ -52,6 +56,7 @@ RUN curl -fSL -o sqlite.tar.gz https://www.sqlite.org/2017/sqlite-autoconf-31602
     && make install \
     && make clean
 	
+	
 # MongoDB:
 # Import MongoDB public GPG key AND create a MongoDB list file
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927 \
@@ -63,10 +68,12 @@ RUN apt-get update && apt-get install -y mongodb-org
 RUN mkdir -p /data/db	
 # Expose port 27017 from the container to the host
 EXPOSE 27017
+# Expose SSHD port just in case.
+EXPOSE 22
 
 
 #Update NodeJS and express
-RUN curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash - \
+RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - \
 && apt-get install -y nodejs nodejs  build-essential \
 && npm install -g express-generator nodemon bower
 EXPOSE 3000
@@ -87,9 +94,10 @@ USER  osdev
 WORKDIR /home/osdev
 
 # Install RubyMine
-RUN wget https://download.jetbrains.com/ruby/RubyMine-2017.2.3.tar.gz \
-&& tar -xzf RubyMine-2017.2.3.tar.gz \
-&& rm RubyMine-2017.2.3.tar.gz
+ARG ruby_mine_version='RubyMine-2018.2.1'
+RUN wget https://download.jetbrains.com/ruby/$ruby_mine_version.tar.gz \
+&& tar -xzf $ruby_mine_version.tar.gz \
+&& rm $ruby_mine_version.tar.gz
 
 #create symbolic link to rubymine and set midori to default browser
 USER  root
