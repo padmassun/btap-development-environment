@@ -36,9 +36,11 @@ def compare_numeric(new_value, old_value, tol = 5, message = '', output = [])
       # if there is still a difference after reducing the tolerance, report it
       if !((BigDecimal.new(new_value) - BigDecimal.new(old_value)).abs < BigDecimal.new("1e-#{new_tol}"))
         output <<  "[#{new_tol}] Key:#{message}\nnew_value:\n#{new_value}\nold_value:\n#{old_value}\n\n".gsub("['update']", '').gsub('update', '')
+        message = ''
       end
     else # else if the new tolerance is more than the default specified tolerance, use the default tollerance
       output << "[#{tol}] Key:#{message}\nnew_value:\n#{new_value}\nold_value:\n#{old_value}\n\n".gsub("['update']", '').gsub('update', '')
+      message = ''
     end
   end
 end
@@ -49,14 +51,16 @@ def compare_with_decimal_places(new_value, old_value, tol = 5, message = '', out
     new_value.each do |key, value| # iterate through each of the 
       new = new_value[key] # store the value
       old = old_value[key] # store the value
+      message.gsub!("['update']", '')
+      message.gsub!('update', '')
       if message == ''
-        message = "#{key}" # store the key as part of the message
+        message = "['#{key}']" # store the key as part of the message
       else
         message = "#{message}['#{key}']" # store the key as part of the message
       end
       compare_with_decimal_places(new, old, tol, message, output) # recursive as long as value is a Hash
+      message.gsub!(/(.+)(\[.+\])$/, '\1') # get rid of the last key added as part of the message
     end
-    
   else
     # At here, the values passed as a parameter is not a hash, so It can be a string or a number
     if new_value.is_num?
@@ -65,6 +69,7 @@ def compare_with_decimal_places(new_value, old_value, tol = 5, message = '', out
       if message.gsub("['update']", '').gsub('update', '') != "['building']['name']" # skip building name
         if new_value.strip != old_value.strip
           output <<  "Key:#{message}\nnew_value:\n#{new_value}\nold_value:\n#{old_value}\n\n".gsub("['update']", '').gsub('update', '')
+          message = ''
         end
       end
     end
