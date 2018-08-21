@@ -51,6 +51,9 @@ exclude = ['run_uuid', 'analysis_id', 'openstudio_version', 'date', 'analysis_na
 + The `Key` states the location of the values that was compared.
 + The `new_value` states the value that is compared which is present within the file defined by the `json_260` variable
 + The `old_value` states the value that is compared which is present within the file defined by the `json_243` variable
++ The `Maximum percent difference` gets the maximum of the following
+  + `((new_value - old_value)/new_value).abs * 100.0` or
+  + `((new_value - old_value)/old_value).abs * 100.0`
 
 
 ```text
@@ -63,24 +66,32 @@ new_value:
 15542.64
 old_value:
 15542.51
+Maximum percent difference:
+0.0008364157397949214
 
 [1] Key:['building']['end_uses']['total_end_uses_water_m3']
 new_value:
 16627.24
 old_value:
 16627.11
+Maximum percent difference:
+0.0007818556562205857
 
 [5] Key:['building']['end_uses_eui']['heat_rejection_water_m3_per_m2']
 new_value:
 4.085859048482617
 old_value:
 4.085824874000269
+Maximum percent difference:
+0.0008364157398291505
 
 [5] Key:['building']['end_uses_eui']['total_end_uses_water_m3_per_m2']
 new_value:
 4.3709793835083435
 old_value:
 4.3709452090259955
+Maximum percent difference:
+0.0007818556562416421
 
 ________________________________________
 Building: Outpatient
@@ -91,5 +102,60 @@ new_value:
 59.5
 old_value:
 59.25
+Maximum percent difference:
+0.42194092827004215
+
 ________________________________________
+```
+
+#### Sample diff_percent.json output file
+
+This file shows the diff sorted by the `percent_diff` key (reported as `Maximum percent difference` in `diff.txt` above)
++ `percent_diff_1` = `(new_value - old_value)/old_value * 100.0`
++ `percent_diff_2` = `(new_value - old_value)/new_value * 100.0`
++ `percent_diff` = `[percent_diff_1, percent_diff_2].max`
+
+```json
+[
+  {
+    "Building": "Outpatient",
+    "City": "NS_Sable Island Natl Park",
+    "diff_data": {
+      "message": "[1] Key:['building']['unmet_hours']['cooling']\nnew_value:\n47.75\nold_value:\n47.5\n",
+      "percent_diff_1": 0.5263157894736842,
+      "percent_diff_2": 0.5235602094240838,
+      "percent_diff": 0.5263157894736842,
+      "key": "['building']['unmet_hours']",
+      "new_value": "47.75",
+      "old_value": "47.5"
+    }
+  },
+  {
+    "Building": "Outpatient",
+    "City": "BC_Prince George Intl AP",
+    "diff_data": {
+      "message": "[1] Key:['building']['unmet_hours']['cooling']\nnew_value:\n59.5\nold_value:\n59.25\n",
+      "percent_diff_1": 0.42194092827004215,
+      "percent_diff_2": 0.42016806722689076,
+      "percent_diff": 0.42194092827004215,
+      "key": "['building']['unmet_hours']",
+      "new_value": "59.5",
+      "old_value": "59.25"
+    }
+  },
+  {
+    "Building": "Outpatient",
+    "City": "MB_The Pas AP",
+    "diff_data": {
+      "message": "[5] Key:['building']['economics']['total_cost_per_m2']\nnew_value:\n20.422528694908415\nold_value:\n20.423138577977987\n",
+      "percent_diff_1": 0.002986235769998749,
+      "percent_diff_2": 0.002986324948702576,
+      "percent_diff": 0.002986324948702576,
+      "key": "['building']['economics']",
+      "new_value": "20.422528694908415",
+      "old_value": "20.423138577977987"
+    }
+  },
+  ...
+]
 ```
