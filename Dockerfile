@@ -1,4 +1,5 @@
-FROM canmet/docker-openstudio:2.6.0
+ARG DOCKER_OPENSTUDIO_VERSION=2.6.0
+FROM canmet/docker-openstudio:$DOCKER_OPENSTUDIO_VERSION
 
 MAINTAINER Phylroy Lopez phylroy.lopez@canada.ca
 
