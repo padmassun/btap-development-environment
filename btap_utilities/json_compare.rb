@@ -35,10 +35,28 @@ def compare_numeric(new_value, old_value, tol = 5, message = '', output = [])
       
       # if there is still a difference after reducing the tolerance, report it
       if !((BigDecimal.new(new_value) - BigDecimal.new(old_value)).abs < BigDecimal.new("1e-#{new_tol}"))
-        output <<  "[#{new_tol}] Key:#{message}\nnew_value:\n#{new_value}\nold_value:\n#{old_value}\n\n".gsub("['update']", '').gsub('update', '')
+        out = {}
+        out['message'] = "[#{new_tol}] Key:#{message}\nnew_value:\n#{new_value}\nold_value:\n#{old_value}\n".gsub("['update']", '').gsub('update', '')
+        out['percent_diff_1'] = ((new_value.to_f - old_value.to_f)/old_value.to_f).abs * 100.0
+        out['percent_diff_2'] = ((new_value.to_f - old_value.to_f)/new_value.to_f).abs * 100.0
+        out['percent_diff'] = [out['percent_diff_1'], out['percent_diff_2']].max
+        out['key'] = message
+        out['new_value'] = new_value
+        out['old_value'] = old_value
+        output <<  out
+        message = ''
       end
-    else # else if the new tolerance is more than the default specified tolerance, use the default tollerance
-      output << "[#{tol}] Key:#{message}\nnew_value:\n#{new_value}\nold_value:\n#{old_value}\n\n".gsub("['update']", '').gsub('update', '')
+    else # else if the new tolerance is more than the default specified tolerance, use the default tolerance
+      out = {}
+      out['message'] = "[#{tol}] Key:#{message}\nnew_value:\n#{new_value}\nold_value:\n#{old_value}\n".gsub("['update']", '').gsub('update', '')
+      out['percent_diff_1'] = ((new_value.to_f - old_value.to_f)/old_value.to_f).abs * 100.0
+      out['percent_diff_2'] = ((new_value.to_f - old_value.to_f)/new_value.to_f).abs * 100.0
+      out['percent_diff'] = [out['percent_diff_1'], out['percent_diff_2']].max
+      out['key'] = message
+      out['new_value'] = new_value
+      out['old_value'] = old_value
+      output << out
+      message = ''
     end
   end
 end
@@ -49,14 +67,16 @@ def compare_with_decimal_places(new_value, old_value, tol = 5, message = '', out
     new_value.each do |key, value| # iterate through each of the 
       new = new_value[key] # store the value
       old = old_value[key] # store the value
+      message.gsub!("['update']", '')
+      message.gsub!('update', '')
       if message == ''
-        message = "#{key}" # store the key as part of the message
+        message = "['#{key}']" # store the key as part of the message
       else
         message = "#{message}['#{key}']" # store the key as part of the message
       end
       compare_with_decimal_places(new, old, tol, message, output) # recursive as long as value is a Hash
+      message.gsub!(/(.+)(\[.+\])$/, '\1') # get rid of the last key added as part of the message
     end
-    
   else
     # At here, the values passed as a parameter is not a hash, so It can be a string or a number
     if new_value.is_num?
@@ -64,7 +84,14 @@ def compare_with_decimal_places(new_value, old_value, tol = 5, message = '', out
     else # if the new_value is a string
       if message.gsub("['update']", '').gsub('update', '') != "['building']['name']" # skip building name
         if new_value.strip != old_value.strip
-          output <<  "Key:#{message}\nnew_value:\n#{new_value}\nold_value:\n#{old_value}\n\n".gsub("['update']", '').gsub('update', '')
+          out = {}
+          out['message'] = "Key:#{message}\nnew_value:\n#{new_value}\nold_value:\n#{old_value}\n".gsub("['update']", '').gsub('update', '')
+          out['percent_diff'] = 0
+          out['key'] = message
+          out['new_value'] = new_value
+          out['old_value'] = old_value
+          output << out
+          message = ''
         end
       end
     end
@@ -79,6 +106,8 @@ File.open('diff.txt', 'w'){ |f|
 
 diff_260 = []
 diff_243 = []
+
+percent_diff = []
 
 # compare the content of the json files if and only if the content of the json file that has the same building name and city
 json_260.each do |new| # iterate through the contents of the new json file
@@ -101,8 +130,18 @@ json_260.each do |new| # iterate through the contents of the new json file
           f.puts "Building: #{new_bldg}" # Report building name
           f.puts "City: #{new_epw}" # Report weather files
           f.puts "Diff: [tolerance] message" # general message regarding the format of the output
-          f.puts output
-          f.puts "_"*40
+          output.each_with_index do |value, index|
+            f.puts output[index]['message'] # report diff message
+            f.puts "Maximum percent difference:" # report maximum percent difference
+            f.puts output[index]['percent_diff']
+            f.puts "\n"
+            out = {}
+            percent_diff << out
+            out['Building'] = new_bldg
+            out['City'] = new_epw
+            out['diff_data'] = output[index]
+          end
+          f.puts "_"*40 + "\n"
         }
       end
     end
@@ -117,4 +156,9 @@ File.open('./diff_260.json', 'w'){ |f|
 }
 File.open('./diff_243.json', 'w'){ |f|
 	f.puts JSON.pretty_generate(diff_243)
+}
+File.open('./diff_percent.json', 'w'){ |f|
+  percent_diff = percent_diff.sort_by {|value| value['diff_data']['percent_diff']}
+  percent_diff = percent_diff.reverse
+  f.puts JSON.pretty_generate(percent_diff)
 }
