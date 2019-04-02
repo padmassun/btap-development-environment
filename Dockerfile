@@ -90,12 +90,6 @@ RUN curl -O http://s3.amazonaws.com/ec2-downloads/ec2-api-tools.zip \
 && rm ec2-api-tools.zip  
 ENV EC2_HOME=/usr/local/ec2/ec2-api-tools
 
-#Install Remarkable
-RUN wget https://remarkableapp.github.io/files/remarkable_1.87_all.deb \
-&& apt-get update \
-&& dpkg -i remarkable_1.87_all.deb \
-&& apt-get upgrade -f \
-&& sudo dpkg -i remarkable_1.87_all.deb 
 
 
 USER  osdev
