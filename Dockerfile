@@ -1,4 +1,4 @@
-ARG DOCKER_OPENSTUDIO_VERSION=2.8.0
+ARG DOCKER_OPENSTUDIO_VERSION=2.8.1
 FROM canmet/docker-openstudio:$DOCKER_OPENSTUDIO_VERSION
 
 MAINTAINER Phylroy Lopez phylroy.lopez@canada.ca
@@ -96,19 +96,19 @@ USER  osdev
 WORKDIR /home/osdev
 
 # Install RubyMine
-ARG ruby_mine_version='RubyMine-2019.1.2'
+ARG ruby_mine_version='RubyMine-2018.2.6'
 RUN wget https://download.jetbrains.com/ruby/$ruby_mine_version.tar.gz \
 && tar -xzf $ruby_mine_version.tar.gz \
 && rm $ruby_mine_version.tar.gz
 
 # Install PyCharm
-ARG pycharm_version='pycharm-professional-2019.1.2'
+ARG pycharm_version='pycharm-professional-2019.1.3'
 RUN wget https://download.jetbrains.com/python/$pycharm_version.tar.gz \
 && tar -xzf $pycharm_version.tar.gz \
 && rm $pycharm_version.tar.gz
 #create symbolic link to rubymine and pycharm and set midori to default browser
 
-ARG pycharm_loc='pycharm-2019.1.2'
+ARG pycharm_loc='pycharm-2019.1.3'
 USER  root
 RUN ln -s /home/osdev/$ruby_mine_version/bin/rubymine.sh /usr/local/sbin/rubymine \
 && ln -s /home/osdev/$pycharm_loc/bin/pycharm.sh /usr/local/sbin/pycharm \
