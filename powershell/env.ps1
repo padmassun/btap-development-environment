@@ -11,7 +11,7 @@ if (Test-Path "c:\Program Files(x86)\Xming" ) {
 }
 
 }
-$host_ip = (Get-NetIPAddress).IPv4Address
+$host_ip = 'host.docker.internal'
 $win_user = $env:UserName
 
 $xming = Get-Process xming -ErrorAction SilentlyContinue
@@ -22,18 +22,6 @@ if($xming -eq $null) {
 	start-process $xmingexe $arguments
 	}
 	
-foreach ($element in $host_ip -ne $NULL) {
-	Write-Host $element
-	$xset = $xfolder +  '\Xset.exe'
-	$arguments = ' -display ' + $element + ':0.0  q'
-	$proc = Start-Process $xset $arguments  -PassThru
-    $handle = $proc.Handle # cache proc.Handle
-    $proc.WaitForExit();
-	if  ($proc.ExitCode -eq 0) {
-		$host_ip = $element
-		break
-	}
-}
 
 $x_display = $host_ip + ':0.0'
 $linux_home_folder = '/home/osdev'
