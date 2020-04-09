@@ -24,6 +24,10 @@ mkdir /c/Users/$(whoami)/projects && cd /c/Users/$(whoami)/projects
 ```bash
 git clone https://github.com/canmet-energy/btap-development-environment.git && cd btap-development-environment
 ```
+4. switch to the branch name that matches the version of OpenStudio you wish to use. For example for version 2.8.1 issue this command to swtich to that branch. 
+```bash
+git checkout 2.8.1
+```
 
 ## Step 1 Ensure your Environment is Clean
 
