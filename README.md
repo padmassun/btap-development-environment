@@ -59,7 +59,7 @@ terminator
 ```
 This will start the terminator terminal. This is your X terminal called 'terminator this where you can execute linux commands. There are numerous tutorials on the linux console that we will not go into here.
 
-## Windows Interop
+## Sharing files from your Windows Host and your container
 The container was set up to be linked to your C:\Users\<your windows username> folder on windows. If you perform a directory listing "ls -l" and hit enter you should see a listing of files and folders. One of these folders is called 'windows-host' this is your shared folder to windows.  If you ls that directory, you should see your host windows user folders. The neat thing is that you can interact with that folder like it was a mounted drive. You cannot access your full windows systems the way the container is currently implemented. 
 
 ## Openstudio
@@ -76,34 +76,10 @@ openstudio
 ```bash
 energyplus
 ```
-## R 
-The R language is also installed with some common NREL plugings used for buildings. 
-
-## Nodejs
-Node JS is installed and npm. 
-
-## Sqlite with json support is installed. 
 
 # Editors
-Originally I added Netbeans and VSCode to the image. This took too much effort to maintain and made the image large. 
+RubyMine and PyCharms are installed by default on in the containers as of 2.8.1. They are evaluation versions and require a key after 30 days.  
 
-## nano and vim
-Nano, Vim and XEmacs have been installed by default.  If you wish to install other editors. 
-
-## Git Shortcuts for development
-To checkout copies of development and make things a bit easier (in your ~/.gitconfig file)
-  os = clone https://github.com/NREL/OpenStudio.git
-  os-standards = clone https://github.com/NREL/openstudio-standards.git
-  os-ptool =clone https://github.com/NREL/OpenStudio-PTool.git
-  os-measures = clone https://github.com/NREL/OpenStudio-measures.git
-  os-spreadsheet = https://github.com/NREL/OpenStudio-analysis-spreadsheet.git
-  nrcan-ptool = clone https://github.com/phylroy/OpenStudio-PTool.git
-  nrcan-standards = clone https://github.com/NREL/openstudio-standards.git -b nrcan 
-  nrcan-measures = clone https://github.com/NREL/OpenStudio-measures.git -b nrcan
-So to clone the nrcan-standards branch, you simply type. 
-```bash
-git nrcan-standards
-```
 #Troubleshooting
 ## You see curl failures when building image indicating network certificate failures.
 This can be due to network conflicts. This has been observed on Docker for Windows v1.12.3.  One solution found was to change the mtu value to something lower in the docker host container.  You can add this by opening the Docker setting from the tray icon, going to the Docker Deamon tab and add the MTU value like below
