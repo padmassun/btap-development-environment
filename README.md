@@ -42,11 +42,6 @@ This will create the Docker Image used for development.  This may take a long ti
 cd /c/Users/$(whoami)/projects/btap-development-environment && ./2-dockerfile_pull_image.sh
 ```
 
-## Step 2 Alternative: Fast Method for CANMET Staff
-BCC has very slow internet speed. To speed up very long download times, a version of the phylroy/btap-development-environment will be kept on the network drive. The above is the preferred method, but this is faster, but may not be always up to date. This should take 10-15 minutes.
-```bash
-cd /c/Users/$(whoami)/projects/btap-development-environment && ./2-dockerfile_canmet_fast_build_image.sh
-```
 ## Step 3 Create a workspace container
 This will create a container that you can do development in. You can create many containers based on the image that we created above. We will call this container *my_workspace*
 ```bash
